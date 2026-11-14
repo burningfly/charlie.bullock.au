@@ -7,8 +7,8 @@
   <meta name="description" content="Dive the reef, bring home fish, and help a village rebuild in Reefkeeper.">
   <title>Reefkeeper — Charlie's Game Lab</title>
   <link rel="preload" as="image" href="/images/reefkeeper-key-art.png">
-  <link rel="stylesheet" href="/style.css">
-  <script src="/game.js" defer></script>
+  <link rel="stylesheet" href="/style.css?v=phaser-2d-1">
+  <script src="/reefkeeper-2d.js?v=phaser-2d-1" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -32,8 +32,8 @@
 
       <section class="game-section" id="play" aria-labelledby="play-title">
         <div class="section-intro">
-          <div><p class="eyebrow">DAY 01 <span class="eyebrow-sep">/</span> THE FIRST DIVE</p><h2 id="play-title">The reef is waiting</h2></div>
-          <p>Bring back something for the village. The water is yours to explore.</p>
+          <div><p class="eyebrow">A SIDE-SCROLLING REEF ADVENTURE</p><h2 id="play-title">Reefkeeper</h2></div>
+          <p>Explore the reef, catch fish, find a keepsake, and help your neighbours rebuild.</p>
         </div>
 
         <div class="game-frame">
@@ -41,13 +41,14 @@
             <div class="hud-cell phase-cell"><span class="hud-icon">☀</span><div><small id="phase-label">READY TO DIVE</small><strong id="day-label">DAY 1</strong></div></div>
             <div class="hud-cell air-cell"><div class="hud-label"><span>♡ AIR</span><strong id="air-value">100%</strong></div><div class="air-track"><span id="air-fill"></span></div></div>
             <div class="hud-cell haul-cell"><small>YOUR BASKET</small><strong><span id="haul-count">0</span><span class="fish-mini"> fish</span><span class="haul-divider">·</span><span id="shell-count">0</span><span class="fish-mini"> shells</span></strong></div>
+            <button class="return-button" id="return-button" type="button" disabled>Return to shore <span>↗</span></button>
             <button class="quiet-button" id="sound-toggle" type="button" aria-pressed="false" title="Toggle gentle sound">♪ <span>Sound off</span></button>
           </div>
 
           <div class="canvas-wrap" id="canvas-wrap">
-            <canvas id="game-canvas" width="960" height="540" aria-label="Reefkeeper game area"></canvas>
+            <div id="game-host" aria-label="Reefkeeper 2D game"></div>
             <div class="start-overlay" id="start-overlay">
-              <div class="start-card"><span class="start-sun">☼</span><p class="eyebrow">A NEW DAY ON THE ISLAND</p><h3>Ready, diver?</h3><p>Swim through the reef, catch a few fish for dinner, and look for a keepsake washed in by the storm.</p><button id="start-button" class="button button-light" type="button">Take a deep breath <span>→</span></button></div>
+                <div class="start-card"><span class="start-sun">☼</span><p class="eyebrow">DAY 1 · THE REEF</p><h3>Ready, diver?</h3><p>Swim across the reef, catch fish, and find Piko’s lost shell charm. Watch out for the big fish and come home when you’re ready.</p><button id="start-button" class="button button-light" type="button" disabled>Loading 2D reef…</button></div>
             </div>
             <div class="night-overlay" id="night-overlay" hidden>
               <div class="night-card"><p class="eyebrow">BACK ON SHORE · NIGHT <span id="night-day">1</span></p><h3 id="night-title">Welcome home, diver.</h3><p id="night-message">The villagers are glad you're back.</p>

@@ -52,7 +52,7 @@ The first playable build must include:
 - A small carrying limit so the player chooses what to bring back, without losing items on a safe return.
 - Three villagers with brief dialogue; at least one asks for a specific keepsake or a small number of a fish species.
 - A shared kitchen that visibly improves after contributions. Show a clear before/after change on the first completed night.
-- A recurring night market with an optional spear gun upgrade that increases the distance from which the diver can catch fish.
+- A recurring night market with optional spear gun, larger basket, and air tank upgrades.
 - A basic best-haul leaderboard using the existing `/api/scores` endpoint. Submit only a nickname, game slug, score, and timestamp as already supported by the site.
 - Progress saved locally in the browser so the village does not reset between visits on the same device.
 - A pause/restart path and a clear explanation of controls before the first dive.

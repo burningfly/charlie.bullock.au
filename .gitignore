@@ -1,5 +1,6 @@
 .wrangler/
 node_modules/
+public/reefkeeper-2d.js
 .dev.vars
 .DS_Store
 
