@@ -148,6 +148,11 @@ function makeWorldTextures(scene) {
 class ReefScene extends Phaser.Scene {
   constructor() { super('ReefScene'); }
   init(data) { this.autoStart = Boolean(data?.autoStart); }
+  preload() {
+    this.load.svg('reef-print', '/images/reef-print.svg');
+    this.load.svg('reef-diver', '/images/diver-print.svg');
+    for (const name of ['reef', 'moon', 'coral']) this.load.svg(`fish-${name}`, `/images/fish-print-${name}.svg`);
+  }
   create() {
     makeWorldTextures(this);
     this.activeDive = false;
@@ -163,6 +168,8 @@ class ReefScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 112, WORLD_WIDTH, 360);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, HEIGHT);
     this.cameras.main.startFollow(this.player, true, .08, .08);
+    this.objective = this.add.text(20, 28, '', {fontFamily:'Georgia',fontSize:'15px',fontStyle:'bold',color:'#f5dfad',backgroundColor:'#172c2dd9',padding:{x:10,y:7}}).setScrollFactor(0).setDepth(15);
+    this.targetRing = this.add.graphics().setDepth(11);
     this.cursors = this.input.keyboard.createCursorKeys();
     this.wasd = this.input.keyboard.addKeys('W,A,S,D');
     this.keyboardHandler = (event) => {
@@ -213,6 +220,7 @@ class ReefScene extends Phaser.Scene {
     }
     const waves = this.add.graphics().setDepth(2); waves.lineStyle(2, 0xd1ecdb, .48);
     for (let x = 0; x < WORLD_WIDTH; x += 140) { waves.beginPath(); waves.moveTo(x, 86); waves.lineTo(x + 65, 86); waves.lineTo(x + 85, 90); waves.lineTo(x + 125, 90); waves.strokePath(); }
+    this.add.image(0, 0, 'reef-print').setOrigin(0).setDepth(2);
     const home = this.add.container(55, 158).setDepth(5);
     const boat = this.add.graphics(); boat.fillStyle(0x173f40); boat.fillPoints([new Phaser.Geom.Point(0, 12), new Phaser.Geom.Point(72, 12), new Phaser.Geom.Point(59, 30), new Phaser.Geom.Point(15, 30)], true); boat.fillStyle(0xf2c768); boat.fillRect(35, -12, 3, 28); boat.fillTriangle(38, -10, 56, 5, 38, 6); home.add(boat);
     this.add.text(19, 185, 'YOUR BOAT', { fontFamily: 'system-ui', fontSize: '11px', color: '#173f40', fontStyle: 'bold', backgroundColor: '#f3e8c6', padding: { x: 5, y: 3 } }).setDepth(6);
@@ -259,6 +267,14 @@ class ReefScene extends Phaser.Scene {
     this.player.setVelocity(away * 265, this.player.y < this.predator.y ? -105 : 105);
     trip.air = Math.max(1, trip.air - 12); updateHud(); toast('A big reef fish swam by! Give it some space.'); chirp(200,.12);
   }
+  celebrateCatch(x, y) {
+    const burst = this.add.graphics().setPosition(x,y).setDepth(14);
+    burst.lineStyle(3,0xf5dfad,.9);burst.strokeCircle(0,0,26);
+    for(let i=0;i<8;i++){const a=i*Math.PI/4;burst.lineBetween(Math.cos(a)*32,Math.sin(a)*32,Math.cos(a)*40,Math.sin(a)*40);}
+    this.tweens.add({targets:burst,scale:1.6,alpha:0,duration:400,onComplete:()=>burst.destroy()});
+    const label=this.add.text(x,y-22,'+1 fish',{fontFamily:'Georgia',fontSize:'16px',fontStyle:'bold',color:'#f5dfad',stroke:'#172c2d',strokeThickness:3}).setOrigin(.5).setDepth(14);
+    this.tweens.add({targets:label,y:y-65,alpha:0,duration:700,onComplete:()=>label.destroy()});
+  }
   catchNearby() {
     if (!this.activeDive) return;
     if (this.player.x < 118 && this.player.y < 195) { this.returnHome(); return; }
@@ -266,10 +282,11 @@ class ReefScene extends Phaser.Scene {
       trip.foundCharm = true; this.charm.disableBody(true, true); this.charmMarker.setVisible(false); toast('You found Piko’s shell charm!'); chirp(780,.14); return;
     }
     const range = saved.spearGun ? 230 : 76;
-    const nearest = this.fishList.filter(f => f.active).map(f => ({ f, d: Phaser.Math.Distance.Between(f.x, f.y, this.player.x, this.player.y) })).sort((a,b)=>a.d-b.d)[0];
+    const nearest = this.fishList.filter(f => f.active && !f.getData('caught')).map(f => ({ f, d: Phaser.Math.Distance.Between(f.x, f.y, this.player.x, this.player.y) })).sort((a,b)=>a.d-b.d)[0];
     if (nearest && nearest.d <= range) {
       if (trip.haul >= (saved.biggerBasket ? 9 : MAX_BASKET)) { toast('Your basket is full. Head back to the boat.'); return; }
       const fish = nearest.f;
+      fish.setData('caught', true);
       if (saved.spearGun) {
         const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, fish.x, fish.y);
         const shot = this.add.image(this.player.x, this.player.y, 'spear-shot').setRotation(angle).setDepth(12);
@@ -279,16 +296,16 @@ class ReefScene extends Phaser.Scene {
         shot.body.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
         let hit = false;
         const overlap = this.physics.add.overlap(shot, fish, () => {
-          if (hit || !fish.active) return;
+          if (hit || !fish.visible) return;
           hit = true; shot.destroy(); this.physics.world.removeCollider(overlap);
           this.tweens.add({ targets: fish, x: this.player.x + 10, y: this.player.y + 28, alpha: 0, scale: .25, duration: 230, onComplete: () => fish.disableBody(true, true) });
-          trip.haul += 1; updateHud(); toast(`Spear shot! Caught a ${fish.getData('name')}.`); chirp(650,.09);
+          this.celebrateCatch(fish.x,fish.y); trip.haul += 1; updateHud(); toast(`Spear shot! Caught a ${fish.getData('name')}.`); chirp(650,.09);
         });
-        this.time.delayedCall(950, () => { if (shot.active) shot.destroy(); this.physics.world.removeCollider(overlap); });
+        this.time.delayedCall(950, () => { if (shot.active) shot.destroy(); if (!hit) fish.setData('caught', false); this.physics.world.removeCollider(overlap); });
         toast('Spear away!'); chirp(360,.05); return;
       }
       this.tweens.add({ targets: fish, x: this.player.x + 10, y: this.player.y + 28, alpha: 0, scale: .25, duration: 230, onComplete: () => fish.disableBody(true, true) });
-      trip.haul += 1; updateHud(); toast(`Caught a ${fish.getData('name')}!`); chirp(650,.09); return;
+      this.celebrateCatch(fish.x,fish.y); trip.haul += 1; updateHud(); toast(`Caught a ${fish.getData('name')}!`); chirp(650,.09); return;
     }
     toast('Swim close to a fish or the lost charm first.');
   }
@@ -315,6 +332,10 @@ class ReefScene extends Phaser.Scene {
   update(time, delta) {
     if (!this.activeDive || document.hidden) return;
     const dt = Math.min(delta, 40) / 1000;
+    this.objective.setText(`DINNER  ${trip.haul}/${saved.biggerBasket?9:6}    ·    ${trip.foundCharm || saved.keepsakeReturned ? 'CHARM FOUND' : 'FIND THE SHELL CHARM'}`);
+    this.targetRing.clear();
+    const target=this.fishList.find(f=>f.active&&!f.getData('caught')&&Phaser.Math.Distance.Between(f.x,f.y,this.player.x,this.player.y)<(saved.spearGun?230:76));
+    if(target){this.targetRing.lineStyle(2,0xf5dfad,.8);this.targetRing.strokeCircle(target.x,target.y,32);}
     trip.air = Math.max(0, trip.air - dt * (saved.airTank ? .92 : 1.3)); updateHud();
     if (trip.air <= 0) { this.returnHome('Your air was running low, so the boat brought you safely home'); return; }
     const left = this.cursors.left.isDown || this.wasd.A.isDown;
@@ -353,6 +374,10 @@ class ShoreScene extends Phaser.Scene {
     for(let i=0;i<4;i++){
       const x=60+i*258; this.add.image(x+78,236,'village-house').setScale(1.02+(i%2)*.04);
     }
+    this.repairs = this.add.graphics().setDepth(3);
+    this.paintRepairs();
+    this.game.events.on('village-repaired', this.paintRepairs, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.game.events.off('village-repaired', this.paintRepairs, this));
     const water=this.add.graphics();water.fillStyle(0x246967,1);water.fillRect(0,350,WIDTH,190);water.lineStyle(3,0x96cabb,.7);
     for(let y=374;y<530;y+=24){water.beginPath();water.moveTo(0,y);water.lineTo(160,y-5);water.lineTo(320,y);water.lineTo(485,y+4);water.lineTo(650,y);water.lineTo(810,y-4);water.lineTo(960,y);water.strokePath();}
     const dock=this.add.graphics();dock.fillStyle(0xa37c4e,1);dock.fillRect(0,345,WIDTH,19);dock.fillStyle(0xc19a60,1);for(let x=20;x<WIDTH;x+=83)dock.fillRect(x,339,12,50);
@@ -372,6 +397,17 @@ class ShoreScene extends Phaser.Scene {
     this.add.text(480,485,'SHARE DINNER · TALK · REST',{fontFamily:'Georgia',fontSize:'23px',fontStyle:'bold',color:'#f7e8c2'}).setOrigin(.5);
     this.game.events.on('next-day',this.nextDay,this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.game.events.off('next-day',this.nextDay,this));
+  }
+  paintRepairs() {
+    const g = this.repairs; g.clear();
+    const count = Math.min(4, Math.ceil(saved.sharedFish / 2));
+    for (let i=0; i<count; i++) {
+      const x=60+i*258;
+      g.fillStyle(0x91b7a2); g.fillTriangle(x-7, 224, x+42, 164, x+181, 224);
+      g.lineStyle(3,0x172c2d); g.strokeTriangle(x-7,224,x+42,164,x+181,224);
+      for(let j=0;j<6;j++) g.lineBetween(x+19+j*23,205,x+34+j*23,222);
+      g.fillStyle(0xf2c768); g.fillRect(x+14,247,34,31);g.fillRect(x+94,247,34,31);
+    }
   }
   nextDay() {
     saved.day += 1; persist(); trip.active=false; trip.shared=false; trip.foundCharm=false; trip.speaker=0;
@@ -408,7 +444,7 @@ function talk(id) {
 }
 function shareCatch() {
   if(trip.haul<=0||trip.shared)return;
-  saved.sharedFish+=trip.haul;saved.shells+=trip.haul;trip.shared=true;persist();updateHud();
+  saved.sharedFish+=trip.haul;saved.shells+=trip.haul;trip.shared=true;persist();updateHud();game.events.emit('village-repaired');
   ui.nightTitle.textContent='The village shares a meal';ui.nightMessage.textContent='Malia serves dinner under the lanterns. Everyone has a plate, and you saved a few shells for a future upgrade.';
   const button=document.querySelector('#share-button');button.disabled=true;button.textContent='Dinner is served ✓';
   ui.quest.textContent=saved.sharedFish>=6?'✿ The pantry is full. The whole village is ready for dinner!':`✿ Pantry progress: ${Math.min(saved.sharedFish,6)} of 6 fish. The kitchen is warming up!`;
