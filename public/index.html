@@ -7,14 +7,14 @@
   <meta name="description" content="Dive the reef, bring home fish, and help a village rebuild in Reefkeeper.">
   <title>Reefkeeper — Charlie's Game Lab</title>
   <link rel="preload" as="image" href="/images/reefkeeper-key-art.png">
-  <link rel="stylesheet" href="/style.css?v=idle-transition-8">
-  <script src="/reefkeeper-2d.js?v=idle-transition-8" defer></script>
+  <link rel="stylesheet" href="/style.css?v=town-life-9">
+  <script src="/reefkeeper-2d.js?v=town-life-9" defer></script>
 </head>
 <body>
   <div class="shell">
     <header class="topbar">
       <a class="wordmark" href="#top" aria-label="Charlie's Game Lab home"><span class="mark">✳</span> CHARLIE'S GAME LAB</a>
-      <a class="top-link" href="#how-to-play">How to play <span aria-hidden="true">↘</span></a>
+      <button id="new-game-button" class="quiet-button" type="button">New game</button><a class="top-link" href="#how-to-play">How to play <span aria-hidden="true">↘</span></a>
     </header>
 
     <main id="top">
@@ -50,6 +50,8 @@
             <div class="start-overlay" id="start-overlay">
                 <div class="start-card"><span class="start-sun">☼</span><p class="eyebrow">DAY 1 · THE REEF</p><h3>Ready, diver?</h3><p>Explore three reef habitats. Catch supper, gather storm-washed timber, and bring Piko’s charm home. At dusk, walk the village and help rebuild.</p><button id="start-button" class="button button-light" type="button" disabled>Loading 2D reef…</button></div>
             </div>
+            <div id="room-actions" hidden><strong id="room-heading"></strong><div id="room-buttons"></div></div>
+            <div id="conversation" role="dialog" aria-label="Conversation" hidden><strong id="conversation-name"></strong><p id="conversation-text"></p><button id="conversation-close" type="button">Got it</button></div>
             <div class="toast" id="toast" role="status" aria-live="polite"></div>
           </div>
 
@@ -65,7 +67,7 @@
               <div class="village-nav" aria-label="Village destinations"><button data-visit="malia">Kitchen</button><button data-visit="home">Family home</button><button data-visit="tane">Workshop</button><button data-visit="market">Market</button><button data-visit="piko">Lookout</button></div><div class="night-card"><p class="eyebrow">BACK ON SHORE · NIGHT <span id="night-day">1</span></p><h3 id="night-title">Welcome home, diver.</h3><p id="night-message">The villagers are glad you're back.</p>
                 <div class="night-actions"><button class="button button-coral" id="share-button" type="button">Share the catch</button><button class="button button-paper" id="talk-button" type="button">Talk to the villagers</button><button class="button button-paper" id="continue-button" type="button">Rest until morning <span>☼</span></button></div>
                 <p class="quest-note" id="quest-note"></p>
-              </div><div class="village-journal"><div><p class="eyebrow">BUILD SOMETHING TOGETHER</p><h3>Village repair board</h3><p>Timber in store: <strong id="wood-count">0</strong> · Meals keep the builders going; only timber is spent.</p><div id="repair-board"></div></div><p id="village-requests"></p></div>
+              </div><div class="village-journal"><div><p class="eyebrow">BUILD SOMETHING TOGETHER</p><h3>Village repair board</h3><p>Timber in store: <strong id="wood-count">0</strong> · Meals keep the builders going; only timber is spent.</p><div id="repair-board"></div><p id="repair-benefits"></p><div id="town-goals"></div><div id="market-stock"></div></div><p id="village-requests"></p></div>
             </div>
 
         </div>
@@ -86,5 +88,5 @@
     </main>
     <footer><span class="footer-mark">✳</span><span>Made with care on a little island.</span><span class="footer-meta">NO RUSH · NO WRONG TURNS</span></footer>
   </div>
-</body>
+<dialog id="new-game-dialog" aria-labelledby="reset-title"><h2 id="reset-title">Start a new adventure?</h2><p>This resets your village, shells, upgrades and quests on this browser to Day 1. Scores already on the shared board stay there.</p><div><button id="cancel-new-game" class="button button-paper" autofocus>Keep playing</button><button id="confirm-new-game" class="button button-coral">Start new game</button></div></dialog></body>
 </html>

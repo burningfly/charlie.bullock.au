@@ -35,3 +35,10 @@
 - Village navigation uses `ShoreScene`; its dialogue and repair board sit below the canvas so they never block walking or NPC selection.
 - Save fields `wood`, `repairs`, `species`, and `moonQuest` extend existing saves. Shared species counts are credited once per haul; timber transfers once on safe return.
 - New art sources: `town-panorama.png`, `town-restored.png`, `shore-walk.png`; export using `npm run art:prepare`. Do not replace actors with geometric fallback drawings.
+
+## Buildings and conversations
+
+- `RoomScene` supplies kitchen/home/workshop interiors. Pause/resume `ShoreScene` when entering/leaving; publish `data-scene=village` only after its RESUME event so keyboard controls are ready.
+- All dialogue should call `presentDialogue()` to show the in-game conversation, not only update below-canvas text. Room touch actions need their own handler; paused shore handlers must not process them.
+- New Game pauses play and confirms before clearing only `reefkeeper-save`. Never clear all origin storage or shared scores.
+- Interior atlas source is `art/source/room-interiors.png`, exported in thirds by `art:prepare`. Extra tests cover doors, room conversation/touch, leave/rest, reset cancellation and confirmation, repair discounts, and celebration.

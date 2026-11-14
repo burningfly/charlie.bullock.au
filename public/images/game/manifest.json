@@ -181,5 +181,23 @@
       28,
       28
     ]
+  },
+  "room-kitchen": {
+    "file": "room-kitchen.webp",
+    "kind": "environment",
+    "width": 960,
+    "height": 540
+  },
+  "room-home": {
+    "file": "room-home.webp",
+    "kind": "environment",
+    "width": 960,
+    "height": 540
+  },
+  "room-workshop": {
+    "file": "room-workshop.webp",
+    "kind": "environment",
+    "width": 960,
+    "height": 540
   }
 }

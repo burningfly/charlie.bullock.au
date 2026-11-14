@@ -34,3 +34,17 @@ New production art, generated with the built-in image tool:
 Standing and floating use dedicated eight-frame idle sheets, generated with the built-in image tool. Shore idle brief: same character and print style, side profile, both bare feet planted, arms relaxed, subtle breathing/blink, transparent 4x2 atlas. Floating brief: same diver and basket, relaxed slightly diagonal hover, both hands at basket, no swim strokes or alternating kicks, eight transparent frames. Float generation required a background-removal correction.
 
 Assets: `art/source/shore-idle.png` and `art/source/diver-float.png`, exported beside the other game atlases. State changes blend poses over 140ms; reduced-motion mode uses a static idle pose. Walking is registered around a stable head/body anchor instead of the alternating contact foot. Camera rendering preserves fractional pixels.
+
+## Town life and usable buildings
+
+- Kitchen, home and workshop doors now open a separate `RoomScene`. Clicking the building facade, its label, or its destination button enters. Space interacts with the nearest place; Escape leaves a room. Rooms provide Talk/Share/Repair/Rest/Leave buttons, and NPCs themselves can be clicked.
+- Conversations appear over the game with speaker name, readable text and a dismiss button. Village movement stops while a conversation is open.
+- Shop cards offer all three upgrades independently, with prices, effects, ownership and affordability. The merchant still visits on even days.
+- Add workshop restoration (18 shared meals, 4 timber). Home reduces air use by 10%, dock increases swim speed by 12%, workshop reduces equipment prices by one shell.
+- A rotating daily supper request pays 2 shells for sharing two of the day's species, once per day. Rebuild all four structures and complete both neighbour quests to hold the village celebration.
+- Rest automatically shares an unshared catch. Found charms survive returns/reloads until handed back.
+- New Game opens an accessible confirmation dialog and pauses play; cancelling preserves the save. Confirming clears only this game's browser save, then starts Day 1. Published leaderboard entries are untouched.
+
+Interior art was generated with the built-in image tool from the approved town style. Source: `art/source/room-interiors.png`. Brief: three equal-height 16:9 interior panels stacked vertically—communal kitchen with stove and table; family home with beds and hammock; carpenter workshop with tool rack and canoe. Side-on stage, clear floor for actors, no people or text, same fun linocut palette and original geometric motifs. Export: `room-kitchen.webp`, `room-home.webp`, `room-workshop.webp` under `public/images/game/`.
+
+Next priorities after this update: a richer fish collection journal, more reef layouts across days, and a proper save of an unfinished dive/night rather than only persistent village progress.

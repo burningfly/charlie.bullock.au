@@ -47,6 +47,13 @@ for(const name of ['boat','charm']){
  await sharp(path.join(source,name+'.png')).trim().resize(name==='boat'?384:96,name==='boat'?192:96,{fit:'contain',background:{r:0,g:0,b:0,alpha:0}}).webp({lossless:true}).toFile(path.join(dest,name+'.webp'));
  manifest[name]={file:name+'.webp',kind:'prop',displaySize:name==='boat'?[180,90]:[28,28]};
 }
+const roomsFile=path.join(source,'room-interiors.png');
+const roomsMeta=await sharp(roomsFile).metadata();
+for(const [index,name] of ['kitchen','home','workshop'].entries()){
+ const top=Math.round(index*roomsMeta.height/3),bottom=Math.round((index+1)*roomsMeta.height/3);
+ await sharp(roomsFile).extract({left:0,top,width:roomsMeta.width,height:bottom-top}).resize(960,540).webp({quality:92}).toFile(path.join(dest,'room-'+name+'.webp'));
+ manifest['room-'+name]={file:'room-'+name+'.webp',kind:'environment',width:960,height:540};
+}
 await fs.writeFile(path.join(dest,'manifest.json'),JSON.stringify(manifest,null,2));console.log('Prepared animation atlases:',Object.keys(manifest).join(', '));
 
 async function registerFeet(frames){
