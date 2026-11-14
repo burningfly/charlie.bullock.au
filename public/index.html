@@ -7,8 +7,8 @@
   <meta name="description" content="Dive the reef, bring home fish, and help a village rebuild in Reefkeeper.">
   <title>Reefkeeper — Charlie's Game Lab</title>
   <link rel="preload" as="image" href="/images/reefkeeper-key-art.png">
-  <link rel="stylesheet" href="/style.css?v=balanced-fish-6">
-  <script src="/reefkeeper-2d.js?v=balanced-fish-6" defer></script>
+  <link rel="stylesheet" href="/style.css?v=village-rebuild-7">
+  <script src="/reefkeeper-2d.js?v=village-rebuild-7" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -32,8 +32,8 @@
 
       <section class="game-section" id="play" aria-labelledby="play-title">
         <div class="section-intro">
-          <div><p class="eyebrow">A SIDE-SCROLLING REEF ADVENTURE</p><h2 id="play-title">Reefkeeper</h2></div>
-          <p>Explore the reef, catch fish, find a keepsake, and help your neighbours rebuild.</p>
+          <div><p class="eyebrow">THE TIDE BRINGS US HOME</p><h2 id="play-title">Reefkeeper</h2></div>
+          <p>A living reef. A village to rebuild. One basket at a time.</p>
         </div>
 
         <div class="game-frame">
@@ -48,25 +48,26 @@
           <div class="canvas-wrap" id="canvas-wrap">
             <div id="game-host" aria-label="Reefkeeper 2D game"></div>
             <div class="start-overlay" id="start-overlay">
-                <div class="start-card"><span class="start-sun">☼</span><p class="eyebrow">DAY 1 · THE REEF</p><h3>Ready, diver?</h3><p>Swim across the reef, catch fish, and find Piko’s lost shell charm. Watch out for the big fish and come home when you’re ready.</p><button id="start-button" class="button button-light" type="button" disabled>Loading 2D reef…</button></div>
-            </div>
-            <div class="night-overlay" id="night-overlay" hidden>
-              <div class="night-card"><p class="eyebrow">BACK ON SHORE · NIGHT <span id="night-day">1</span></p><h3 id="night-title">Welcome home, diver.</h3><p id="night-message">The villagers are glad you're back.</p>
-                <div class="night-actions"><button class="button button-coral" id="share-button" type="button">Share the catch</button><button class="button button-paper" id="talk-button" type="button">Talk to the villagers</button><button class="button button-paper" id="continue-button" type="button">Rest until morning <span>☼</span></button></div>
-                <p class="quest-note" id="quest-note"></p>
-              </div>
+                <div class="start-card"><span class="start-sun">☼</span><p class="eyebrow">DAY 1 · THE REEF</p><h3>Ready, diver?</h3><p>Explore three reef habitats. Catch supper, gather storm-washed timber, and bring Piko’s charm home. At dusk, walk the village and help rebuild.</p><button id="start-button" class="button button-light" type="button" disabled>Loading 2D reef…</button></div>
             </div>
             <div class="toast" id="toast" role="status" aria-live="polite"></div>
           </div>
 
           <div class="game-controls">
-            <div class="legend" id="how-to-play"><span><kbd>W A S D</kbd> / <kbd>← ↑ ↓ →</kbd> Swim</span><span><kbd>SPACE</kbd> Catch fish / pick up</span><span><kbd>ESC</kbd> Return to shore</span></div>
+            <div class="legend" id="how-to-play"><span><kbd>W A S D</kbd> / <kbd>← ↑ ↓ →</kbd> Swim / walk</span><span><kbd>SPACE</kbd> Catch fish / pick up</span><span><kbd>ESC</kbd> Return to shore</span></div>
             <div class="touch-controls" aria-label="Touch swim controls">
               <div class="dpad"><button data-move="up" aria-label="Swim up">▲</button><div><button data-move="left" aria-label="Swim left">◀</button><button data-move="down" aria-label="Swim down">▼</button><button data-move="right" aria-label="Swim right">▶</button></div></div>
               <button class="catch-button" id="touch-catch" type="button">CATCH<br><small>SPACE</small></button>
             </div>
             <div class="game-hint" id="game-hint">Swim close to a fish, then press <kbd>SPACE</kbd> to catch it.</div>
           </div>
+            <div class="night-overlay" id="night-overlay" hidden>
+              <div class="village-nav" aria-label="Village destinations"><button data-visit="malia">Kitchen</button><button data-visit="home">Family home</button><button data-visit="tane">Workshop</button><button data-visit="market">Market</button><button data-visit="piko">Lookout</button></div><div class="night-card"><p class="eyebrow">BACK ON SHORE · NIGHT <span id="night-day">1</span></p><h3 id="night-title">Welcome home, diver.</h3><p id="night-message">The villagers are glad you're back.</p>
+                <div class="night-actions"><button class="button button-coral" id="share-button" type="button">Share the catch</button><button class="button button-paper" id="talk-button" type="button">Talk to the villagers</button><button class="button button-paper" id="continue-button" type="button">Rest until morning <span>☼</span></button></div>
+                <p class="quest-note" id="quest-note"></p>
+              </div><div class="village-journal"><div><p class="eyebrow">BUILD SOMETHING TOGETHER</p><h3>Village repair board</h3><p>Timber in store: <strong id="wood-count">0</strong> · Meals keep the builders going; only timber is spent.</p><div id="repair-board"></div></div><p id="village-requests"></p></div>
+            </div>
+
         </div>
       </section>
 

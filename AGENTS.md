@@ -28,3 +28,10 @@
 - Run `npm run build` after changing static files or the publishing check.
 - Run `npm run test:e2e` for the headless Chromium smoke flow, including keyboard and mobile controls.
 - Run the Pages Functions locally with Wrangler after configuring the local D1 binding as described in `README.md`.
+
+## Living village rebuild
+
+- `docs/rebuild.md` records the current town/reef loop and asset briefs.
+- Village navigation uses `ShoreScene`; its dialogue and repair board sit below the canvas so they never block walking or NPC selection.
+- Save fields `wood`, `repairs`, `species`, and `moonQuest` extend existing saves. Shared species counts are credited once per haul; timber transfers once on safe return.
+- New art sources: `town-panorama.png`, `town-restored.png`, `shore-walk.png`; export using `npm run art:prepare`. Do not replace actors with geometric fallback drawings.

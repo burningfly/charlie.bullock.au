@@ -103,6 +103,19 @@
     "visibleMaxWidth": 42,
     "visibleMaxHeight": 89
   },
+  "shore-walk": {
+    "file": "shore-walk.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 8,
+    "columns": 4,
+    "rows": 2,
+    "fps": 8,
+    "displayFrameSize": 116,
+    "visibleMaxWidth": 67,
+    "visibleMaxHeight": 99
+  },
   "reef": {
     "file": "reef.webp",
     "kind": "environment",
@@ -114,6 +127,18 @@
     "kind": "environment",
     "width": 960,
     "height": 540
+  },
+  "town-panorama": {
+    "file": "town-panorama.webp",
+    "kind": "environment",
+    "width": 1800,
+    "height": 600
+  },
+  "town-restored": {
+    "file": "town-restored.webp",
+    "kind": "environment",
+    "width": 1800,
+    "height": 600
   },
   "boat": {
     "file": "boat.webp",

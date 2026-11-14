@@ -184,3 +184,35 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* Rebuilt village: the scene remains playable while the journal is open below it. */
+.shell { max-width:1440px; }
+.hero { display:none; }
+.game-section { margin-top:26px; }
+.game-section h2 { font-size:42px; }
+.game-frame { background:#f4e8c8; border:3px solid #233f3c; padding:8px; box-shadow:8px 9px 0 #203f3b18; }
+.night-overlay { position:relative; inset:auto; display:grid; grid-template-columns:1.1fr 1fr; gap:14px; padding:18px; background:#143e40; color:#f6e6c4; pointer-events:auto; }
+.village-nav { grid-column:1/-1; display:flex; gap:8px; flex-wrap:wrap; }
+.village-nav button { flex:1; min-height:44px; border:1px solid #ecd7a5; background:#235754; color:#ffe7b2; font-weight:700; cursor:pointer; }
+.night-card { width:100%; max-height:none; overflow:visible; padding:18px; text-align:left; box-shadow:none; }
+.night-card h3 { font-size:25px; }
+.night-card > p:not(.eyebrow) { max-width:none; font-size:13px; }
+.night-actions { grid-template-columns:1fr 1fr; }
+.night-actions #continue-button { grid-column:1/-1; }
+.village-journal h3 { margin:0; font-size:24px; }
+.village-journal p { font-size:12px; line-height:1.6; }
+#repair-board { display:grid; gap:8px; }
+.repair-project { min-height:43px; padding:10px; text-align:left; border:1px solid #dec792; background:#edba61; color:#183c3b; font-weight:700; cursor:pointer; }
+.repair-project:disabled { background:#285653; color:#d8d6ba; cursor:default; }
+#village-requests { border-top:1px solid #84a397; padding-top:12px; }
+.game-controls { min-height:52px; }
+.game-hint,.legend { font-size:11px; }
+.toast { white-space:normal; text-align:center; max-width:90%; font-size:13px; }
+@media(max-width:760px){
+ .shell{padding:0 10px;} .game-section h2{font-size:32px;}
+ .night-overlay{grid-template-columns:1fr;padding:10px;gap:10px;}
+ .village-nav button{flex:1 1 28%;font-size:11px;}
+ .night-card{padding:14px;} .night-card h3{font-size:23px;}
+ .game-hint{max-width:100%;} .game-controls{flex-wrap:wrap;}
+ .village-section{margin-top:30px;}
+}
