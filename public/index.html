@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#171b3a">
+    <title>Charlie's Game Lab</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/game.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="hero">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <p class="eyebrow">WELCOME TO</p>
+        <h1>Charlie's<br><span>Game Lab</span></h1>
+        <p class="intro">A little corner of the internet for big ideas and fun games.</p>
+        <a class="jump-link" href="#play">Let's play <span aria-hidden="true">↓</span></a>
+      </header>
+
+      <section class="game-card" id="play" aria-labelledby="game-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">QUICK GAME</p>
+            <h2 id="game-title">Star Catcher</h2>
+          </div>
+          <span class="game-icon" aria-hidden="true">🌟</span>
+        </div>
+        <p class="game-copy">Catch as many stars as you can in 15 seconds. Ready?</p>
+        <div class="game-stats" aria-live="polite">
+          <div><span class="stat-label">STARS</span><strong id="score">0</strong></div>
+          <div><span class="stat-label">TIME</span><strong><span id="time">15</span><small> sec</small></strong></div>
+        </div>
+        <button class="play-button" id="play-button" type="button">Start playing</button>
+        <p class="game-message" id="game-message" aria-live="polite">Tap the button to begin!</p>
+
+        <form class="save-score" id="score-form" hidden>
+          <label for="nickname">Add your nickname to the scoreboard</label>
+          <div class="form-row">
+            <input id="nickname" name="nickname" maxlength="20" autocomplete="nickname" placeholder="Your nickname" required>
+            <button type="submit">Save score</button>
+          </div>
+          <p class="form-note">A nickname only, please. No full names.</p>
+        </form>
+      </section>
+
+      <section class="scores-card" aria-labelledby="scores-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">THE HALL OF FAME</p>
+            <h2 id="scores-title">Top Star Catchers</h2>
+          </div>
+          <span class="trophy" aria-hidden="true">🏆</span>
+        </div>
+        <ol class="score-list" id="score-list" aria-live="polite">
+          <li class="empty-score">Loading the scoreboard…</li>
+        </ol>
+      </section>
+
+      <footer>Made for curious minds <span aria-hidden="true">✦</span></footer>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "charlie-game-lab",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node scripts/check-public.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
