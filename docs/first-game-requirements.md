@@ -46,11 +46,13 @@ The first playable build must include:
 - Keyboard controls: arrow keys or WASD to swim, Space to catch/interact, Escape to pause or return where safe.
 - Touch controls: large on-screen swim controls plus a catch/interact button.
 - A short dive with a clearly visible air meter and a safe return when it runs low.
-- Three visually distinct, friendly fish species with simple names and catch feedback.
+- Three visually distinct fish species with simple names and catch feedback.
+- A large reef predator with clear movement cues that the diver can avoid; a close bump uses some air and pushes the diver away without ending the dive.
 - One washed-up keepsake that can be found and returned to a villager.
 - A small carrying limit so the player chooses what to bring back, without losing items on a safe return.
-- Two or three villagers with brief dialogue; at least one asks for a specific keepsake or a small number of a fish species.
+- Three villagers with brief dialogue; at least one asks for a specific keepsake or a small number of a fish species.
 - A shared kitchen that visibly improves after contributions. Show a clear before/after change on the first completed night.
+- A recurring night market with an optional spear gun upgrade that increases the distance from which the diver can catch fish.
 - A basic best-haul leaderboard using the existing `/api/scores` endpoint. Submit only a nickname, game slug, score, and timestamp as already supported by the site.
 - Progress saved locally in the browser so the village does not reset between visits on the same device.
 - A pause/restart path and a clear explanation of controls before the first dive.
@@ -124,6 +126,6 @@ The MVP is ready for a child to try when:
 
 - Use a 2D side-view reef for easy keyboard and touch controls.
 - Make the first outing short and forgiving; air is a gentle return cue, not a life system.
-- Fish are shared as meals; the core reward is visible village recovery, not combat or selling food for profit.
+- Fish are shared as meals and earn shells toward optional fishing gear; the core reward is visible village recovery.
 - Use local storage for progress and the existing score service for an optional best-haul table.
 - Keep merchant upgrades and multiple restoration chains for a follow-up slice after the first day/night cycle is fun.

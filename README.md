@@ -1,32 +1,46 @@
 # Charlie's Game Lab
 
-A small, playful home for games made by Charlie. The first page contains a tiny star-catching game and a shared high-score table.
+Charlie's Game Lab is a small home for games made by Charlie. Its first game is **Reefkeeper**, a short, friendly island adventure about diving for fish and helping a village rebuild after a storm.
+
+## Play Reefkeeper
+
+- Swim with **WASD** or the **arrow keys**. On small touch screens, use the on-screen direction pad; you can also tap the water to swim that way.
+- Swim near a fish and press **Space** or **Catch** to add it to your basket. Find a shell charm on the reef, too.
+- Bring your diver home with **Escape** or by swimming to the **Boat / Home** marker. If the air gauge runs low, the boat brings you back safely.
+- At night, share fish with the village, talk to neighbours, and rest until morning. Your progress saves on this device.
+- A travelling fisher sometimes visits the night market. Save shells for a spear gun upgrade that lets you catch fish from farther away.
+- If a large reef fish swims close, give it room and swim around it. A bump sends you safely back a little way and uses some air.
+
+The optional **Biggest baskets** board stores a nickname and fish count in Cloudflare D1. Use a nickname rather than a real name. The score is a casual browser-submitted record, not a secure competition. The adventure still works when the scoreboard is unavailable.
 
 ## Hosting and data
 
-The site is designed for Cloudflare Pages, with static files in `public/`, a Pages Function at `/api/scores`, and a Cloudflare D1 database. The repository's Markdown documentation is outside `public/`, so it is not included in the deployed site. `npm run build` fails if a Markdown file is added under `public/`.
+This is a static Cloudflare Pages site. Public files live in `public/`; Pages Functions live in `functions/`, and the score endpoint is at `/api/scores`. The existing D1 binding is named `DB`.
 
-### First-time Cloudflare setup
+The repository's Markdown documentation is kept outside `public/`. `npm run build` rejects `.md`, `.markdown`, and `.mdx` files under the published directory. Cloudflare Pages is connected to the GitHub `main` branch, builds with `npm run build`, and publishes `public/`.
 
-1. Create a Cloudflare Pages project connected to this GitHub repository. Set the build command to `npm run build` and the build output directory to `public`.
-2. Create a D1 database named `charlie-game-scores` (for example, with `npx wrangler d1 create charlie-game-scores`).
-3. Apply the schema with `npx wrangler d1 migrations apply charlie-game-scores --remote`.
-4. In the Pages project's Settings → Bindings, add a D1 database binding with variable name `DB` and select `charlie-game-scores`. Redeploy after adding the binding.
-5. Attach `charlie.bullock.au` to the Pages project if it is not already configured.
+## Local development
 
-Cloudflare's Workers Free plan currently includes 100,000 Worker requests per day. D1's Free plan currently includes 5 million rows read and 100,000 rows written per day, plus 5 GB total storage. Keep the account on the Free plan to avoid opting into usage-based Workers charges; at free limits requests or database queries may fail until the quota resets. Check current Cloudflare pricing before changing plans.
+```sh
+npm install
+npm run build
+npm run dev
+```
 
-### Local development
+The local site runs at `http://localhost:8788`. The Pages Function needs a local D1 database to serve scores; without it, the game remains playable and shows a friendly scoreboard message. To exercise the score API with Wrangler, configure local D1 as described in Cloudflare's Pages Functions docs.
 
-Install Wrangler with `npm install` if needed. Run `npx wrangler pages dev public --d1 DB=<database-id>` to serve the site and Functions locally with a local D1 database. Wrangler persists local state under `.wrangler/`, which is ignored by Git.
+## Browser checks
 
-## Privacy and score integrity
+```sh
+npm run test:e2e
+```
 
-Only a nickname, game slug, score, and timestamp are stored. Ask players to use a nickname rather than a full name or other personal details. Scores come from the browser, so a determined player can submit a made-up score; this is suitable for a casual family leaderboard, not a competitive one.
+The Playwright smoke checks launch Chromium headlessly against the local Pages preview. They cover the first dive, catching, returning to shore, village sharing, saved progress, responsive layout, and an unavailable score API.
 
-## Repository layout
+## Project files
 
-- `public/` — website assets that Cloudflare Pages publishes
-- `functions/api/scores.js` — score list and submission endpoint
-- `migrations/` — D1 SQL schema migrations
-- `AGENTS.md` — working instructions for coding agents
+- `public/` — static site files and artwork published by Cloudflare Pages
+- `functions/api/scores.js` — leaderboard API
+- `migrations/` — D1 schema migrations
+- `docs/first-game-requirements.md` — game requirements
+- `AGENTS.md` — instructions for coding agents

@@ -3,9 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "node scripts/check-public.mjs"
+    "build": "node scripts/check-public.mjs",
+    "dev": "wrangler pages dev public --port 8788 --compatibility-date=2026-05-03",
+    "test:e2e": "node tests/e2e.mjs"
   },
   "devDependencies": {
+    "playwright": "^1.65.1",
     "wrangler": "^4.0.0"
   }
 }

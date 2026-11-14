@@ -1,63 +1,88 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#171b3a">
-    <title>Charlie's Game Lab</title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="/game.js" defer></script>
-  </head>
-  <body>
-    <main class="page-shell">
-      <header class="hero">
-        <div class="brand-mark" aria-hidden="true">✦</div>
-        <p class="eyebrow">WELCOME TO</p>
-        <h1>Charlie's<br><span>Game Lab</span></h1>
-        <p class="intro">A little corner of the internet for big ideas and fun games.</p>
-        <a class="jump-link" href="#play">Let's play <span aria-hidden="true">↓</span></a>
-      </header>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123b43">
+  <meta name="description" content="Dive the reef, bring home fish, and help a village rebuild in Reefkeeper.">
+  <title>Reefkeeper — Charlie's Game Lab</title>
+  <link rel="preload" as="image" href="/images/reefkeeper-key-art.png">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/game.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="wordmark" href="#top" aria-label="Charlie's Game Lab home"><span class="mark">✳</span> CHARLIE'S GAME LAB</a>
+      <a class="top-link" href="#how-to-play">How to play <span aria-hidden="true">↘</span></a>
+    </header>
 
-      <section class="game-card" id="play" aria-labelledby="game-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">QUICK GAME</p>
-            <h2 id="game-title">Star Catcher</h2>
-          </div>
-          <span class="game-icon" aria-hidden="true">🌟</span>
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="dot"></span> A LITTLE REEF ADVENTURE</p>
+          <h1 id="hero-title">Reef<span>keeper</span></h1>
+          <p class="lede">A storm changed this little island. Dive for dinner, find what's been lost, and help the village feel like home again.</p>
+          <a class="primary-link" href="#play">Start your first day <span aria-hidden="true">↓</span></a>
+          <div class="hero-note"><span aria-hidden="true">☀</span> Easy going. Explore at your own pace.</div>
         </div>
-        <p class="game-copy">Catch as many stars as you can in 15 seconds. Ready?</p>
-        <div class="game-stats" aria-live="polite">
-          <div><span class="stat-label">STARS</span><strong id="score">0</strong></div>
-          <div><span class="stat-label">TIME</span><strong><span id="time">15</span><small> sec</small></strong></div>
-        </div>
-        <button class="play-button" id="play-button" type="button">Start playing</button>
-        <p class="game-message" id="game-message" aria-live="polite">Tap the button to begin!</p>
-
-        <form class="save-score" id="score-form" hidden>
-          <label for="nickname">Add your nickname to the scoreboard</label>
-          <div class="form-row">
-            <input id="nickname" name="nickname" maxlength="20" autocomplete="nickname" placeholder="Your nickname" required>
-            <button type="submit">Save score</button>
-          </div>
-          <p class="form-note">A nickname only, please. No full names.</p>
-        </form>
+        <div class="hero-art"><img src="/images/reefkeeper-key-art.png" alt="A young diver swims with a basket of fish beneath a village where people rebuild together at sunset"></div>
+        <div class="hero-band" aria-hidden="true"><span>SWIM · SHARE · RESTORE</span><span>SWIM · SHARE · RESTORE</span><span>SWIM · SHARE · RESTORE</span></div>
       </section>
 
-      <section class="scores-card" aria-labelledby="scores-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">THE HALL OF FAME</p>
-            <h2 id="scores-title">Top Star Catchers</h2>
-          </div>
-          <span class="trophy" aria-hidden="true">🏆</span>
+      <section class="game-section" id="play" aria-labelledby="play-title">
+        <div class="section-intro">
+          <div><p class="eyebrow">DAY 01 <span class="eyebrow-sep">/</span> THE FIRST DIVE</p><h2 id="play-title">The reef is waiting</h2></div>
+          <p>Bring back something for the village. The water is yours to explore.</p>
         </div>
-        <ol class="score-list" id="score-list" aria-live="polite">
-          <li class="empty-score">Loading the scoreboard…</li>
-        </ol>
+
+        <div class="game-frame">
+          <div class="hud" aria-live="polite">
+            <div class="hud-cell phase-cell"><span class="hud-icon">☀</span><div><small id="phase-label">READY TO DIVE</small><strong id="day-label">DAY 1</strong></div></div>
+            <div class="hud-cell air-cell"><div class="hud-label"><span>♡ AIR</span><strong id="air-value">100%</strong></div><div class="air-track"><span id="air-fill"></span></div></div>
+            <div class="hud-cell haul-cell"><small>YOUR BASKET</small><strong><span id="haul-count">0</span><span class="fish-mini"> fish</span><span class="haul-divider">·</span><span id="shell-count">0</span><span class="fish-mini"> shells</span></strong></div>
+            <button class="quiet-button" id="sound-toggle" type="button" aria-pressed="false" title="Toggle gentle sound">♪ <span>Sound off</span></button>
+          </div>
+
+          <div class="canvas-wrap" id="canvas-wrap">
+            <canvas id="game-canvas" width="960" height="540" aria-label="Reefkeeper game area"></canvas>
+            <div class="start-overlay" id="start-overlay">
+              <div class="start-card"><span class="start-sun">☼</span><p class="eyebrow">A NEW DAY ON THE ISLAND</p><h3>Ready, diver?</h3><p>Swim through the reef, catch a few fish for dinner, and look for a keepsake washed in by the storm.</p><button id="start-button" class="button button-light" type="button">Take a deep breath <span>→</span></button></div>
+            </div>
+            <div class="night-overlay" id="night-overlay" hidden>
+              <div class="night-card"><p class="eyebrow">BACK ON SHORE · NIGHT <span id="night-day">1</span></p><h3 id="night-title">Welcome home, diver.</h3><p id="night-message">The villagers are glad you're back.</p>
+                <div class="night-actions"><button class="button button-coral" id="share-button" type="button">Share the catch</button><button class="button button-paper" id="talk-button" type="button">Talk to the villagers</button><button class="button button-paper" id="continue-button" type="button">Rest until morning <span>☼</span></button></div>
+                <p class="quest-note" id="quest-note"></p>
+              </div>
+            </div>
+            <div class="toast" id="toast" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="game-controls">
+            <div class="legend" id="how-to-play"><span><kbd>W A S D</kbd> / <kbd>← ↑ ↓ →</kbd> Swim</span><span><kbd>SPACE</kbd> Catch fish / pick up</span><span><kbd>ESC</kbd> Return to shore</span></div>
+            <div class="touch-controls" aria-label="Touch swim controls">
+              <div class="dpad"><button data-move="up" aria-label="Swim up">▲</button><div><button data-move="left" aria-label="Swim left">◀</button><button data-move="down" aria-label="Swim down">▼</button><button data-move="right" aria-label="Swim right">▶</button></div></div>
+              <button class="catch-button" id="touch-catch" type="button">CATCH<br><small>SPACE</small></button>
+            </div>
+            <div class="game-hint" id="game-hint">Swim close to a fish, then press <kbd>SPACE</kbd> to catch it.</div>
+          </div>
+        </div>
       </section>
 
-      <footer>Made for curious minds <span aria-hidden="true">✦</span></footer>
+      <section class="village-section" aria-labelledby="village-title">
+        <div class="section-intro"><div><p class="eyebrow">YOUR KINDNESS ADDS UP</p><h2 id="village-title">A village coming back to life</h2></div><p>Every basket shared brings the lights back on. Check in with your neighbours when the sun goes down.</p></div>
+        <div class="village-progress" id="village-progress" aria-live="polite">
+          <div class="progress-art"><img src="/images/reefkeeper-key-art.png" alt="Village neighbours working side by side"></div>
+          <div class="progress-copy"><p class="eyebrow">COMMUNITY PANTRY</p><h3 id="pantry-title">A little goes a long way</h3><p id="pantry-copy">The kitchen is waiting for its first basket. Share what you find to help neighbours gather around a good meal.</p><div class="progress-meter"><span id="progress-fill"></span></div><small id="progress-label">0 of 6 fish shared</small><div class="villager-chips"><span>✿ Malia, the cook</span><span>⌁ Tane, the builder</span><span>✦ Piko, the explorer</span></div></div>
+        </div>
+      </section>
+
+      <section class="score-section" aria-labelledby="scores-title">
+        <div class="score-heading"><div><p class="eyebrow">REEF RECORDS</p><h2 id="scores-title">Biggest baskets</h2></div><p>Today's best hauls</p></div>
+        <div class="scores-wrap"><ol id="score-list" class="score-list" aria-live="polite"><li class="score-empty">Checking the score board…</li></ol><form class="score-form" id="score-form" hidden><label for="nickname">Add your nickname to the board</label><div class="form-row"><input id="nickname" name="nickname" maxlength="20" autocomplete="nickname" placeholder="A nickname" required><button class="button button-dark" type="submit">Save basket <span>→</span></button></div><small>Nickname only, please. Your score is the number of fish you brought back.</small></form></div>
+      </section>
     </main>
-  </body>
+    <footer><span class="footer-mark">✳</span><span>Made with care on a little island.</span><span class="footer-meta">NO RUSH · NO WRONG TURNS</span></footer>
+  </div>
+</body>
 </html>
