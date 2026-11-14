@@ -385,13 +385,16 @@ class ShoreScene extends Phaser.Scene {
     this.game.events.on('village-repaired',this.paintRepairs,this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.game.events.off('village-repaired',this.paintRepairs,this));
     const villagers=[
-      {id:'malia',name:'Malia · Cook',x:210,color:0},
-      {id:'tane',name:'Tane · Builder',x:475,color:1},
-      {id:'piko',name:'Piko · Explorer',x:740,color:2},
+      {id:'malia',name:'Malia · Cook',x:210,color:0,idleFrame:0,idleSpeed:.83},
+      {id:'tane',name:'Tane · Builder',x:475,color:1,idleFrame:2,idleSpeed:1.07},
+      {id:'piko',name:'Piko · Explorer',x:740,color:2,idleFrame:4,idleSpeed:.96},
     ];
     villagers.forEach(v=>{
       const sprite=this.add.sprite(v.x,v.id==='piko'?310:300,`villager-${v.color}`).setDisplaySize(v.id==='piko'?104:128,v.id==='piko'?104:128).setInteractive({useHandCursor:true});
-      if(!reducedMotion)sprite.play(`villager-${v.color}-loop`);
+      if(!reducedMotion){
+        sprite.play({key:`villager-${v.color}-loop`,startFrame:v.idleFrame});
+        sprite.anims.timeScale=v.idleSpeed;
+      }
       const baseScale=sprite.scaleX;
       this.add.text(v.x,370,v.name,{fontFamily:'system-ui',fontSize:'11px',fontStyle:'bold',color:'#173f40',backgroundColor:'#f4e7c6',padding:{x:5,y:4}}).setOrigin(.5);
       sprite.on('pointerdown',()=>this.game.events.emit('villager-talk',v.id));
