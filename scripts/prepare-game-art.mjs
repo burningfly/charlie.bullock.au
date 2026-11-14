@@ -7,7 +7,7 @@ const root=path.resolve(import.meta.dirname,'..');
 const source=path.join(root,'art/source');
 const dest=path.join(root,'public/images/game');
 await fs.mkdir(dest,{recursive:true});
-const sheets={ 'diver-swim':[4,3], 'gold-swim':[4,2], 'teal-swim':[4,2], 'coral-swim':[4,2], 'shark-swim':[4,2], 'malia-idle':[3,2], 'tane-idle':[3,2], 'piko-idle':[3,2], 'shore-walk':[4,2] };
+const sheets={ 'diver-swim':[4,3], 'gold-swim':[4,2], 'teal-swim':[4,2], 'coral-swim':[4,2], 'shark-swim':[4,2], 'malia-idle':[3,2], 'tane-idle':[3,2], 'piko-idle':[3,2], 'shore-walk':[4,2], 'shore-idle':[4,2], 'diver-float':[4,2] };
 const manifest={};
 for(const [name,[cols,rows]] of Object.entries(sheets)){
  const file=path.join(source,name+'.png');
@@ -21,13 +21,15 @@ for(const [name,[cols,rows]] of Object.entries(sheets)){
   const frame=await sharp(file).extract({left,top,width:Math.round((x+1)*width/cols)-left,height:Math.round((y+1)*height/rows)-top}).resize(256,256,{fit:'contain',background:{r:0,g:0,b:0,alpha:0}}).png().toBuffer();
   frames.push(frame);
  }
- if(name.endsWith('-idle')||name==='shore-walk') frames=await registerFeet(frames);
+ if(name==='diver-float') frames=await registerFloat(frames);
+ if(name.startsWith('shore-')) frames=await registerBody(frames);
+ else if(name.endsWith('-idle')) frames=await registerFeet(frames);
  await sharp({create:{width:cols*256,height:rows*256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite(frames.map((input,i)=>({input,left:(i%cols)*256,top:Math.floor(i/cols)*256}))).webp({lossless:true}).toFile(path.join(dest,name+'.webp'));
  const frameBounds=[];
  for(const frame of frames){const {data}=await sharp(frame).ensureAlpha().raw().toBuffer({resolveWithObject:true});let l=256,r=0,t=256,b=0;for(let y=0;y<256;y++)for(let x=0;x<256;x++)if(data[(y*256+x)*4+3]>128){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}frameBounds.push({width:r-l+1,height:b-t+1});}
  const targetFishLength={'gold-swim':48,'teal-swim':54,'coral-swim':58}[name];
  const maxVisibleWidth=Math.max(...frameBounds.map(b=>b.width));
- const displaySize=targetFishLength?Math.round(targetFishLength*256/maxVisibleWidth):{'diver-swim':150,'shark-swim':260,'malia-idle':128,'tane-idle':128,'piko-idle':104,'shore-walk':116}[name];
+ const displaySize=targetFishLength?Math.round(targetFishLength*256/maxVisibleWidth):{'diver-swim':150,'shark-swim':260,'malia-idle':128,'tane-idle':128,'piko-idle':104,'shore-walk':116,'shore-idle':116,'diver-float':150}[name];
  manifest[name]={file:name+'.webp',kind:'animation',frameWidth:256,frameHeight:256,frames:cols*rows,columns:cols,rows,fps:name==='diver-swim'?10:name==='shark-swim'?7:name.endsWith('-idle')?3:8,displayFrameSize:displaySize,visibleMaxWidth:Math.round(maxVisibleWidth*displaySize/256),visibleMaxHeight:Math.round(Math.max(...frameBounds.map(b=>b.height))*displaySize/256)};
  if(name==='diver-swim'){
   const gif=GIFEncoder();
@@ -65,4 +67,32 @@ async function registerFeet(frames){
   const input=await sharp(frame).extract({left:b.l,top:b.t,width:b.r-b.l+1,height:b.b-b.t+1}).resize(width,height).png().toBuffer();
   return sharp({create:{width:256,height:256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite([{input,left:Math.round(128-(b.feet-b.l)*scale),top:240-height}]).png().toBuffer();
  }));
+}
+
+// Register the stable upper body, never alternating contact feet.
+async function registerBody(frames){
+ const boxes=[];
+ for(const frame of frames){
+  const {data}=await sharp(frame).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+  let l=256,t=256,r=0,b=0;
+  for(let y=0;y<256;y++)for(let x=0;x<256;x++)if(data[(y*256+x)*4+3]>192){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}
+  let hl=256,hr=0;
+  for(let y=t;y<t+(b-t)*.3;y++)for(let x=l;x<=r;x++)if(data[(Math.floor(y)*256+x)*4+3]>192){hl=Math.min(hl,x);hr=Math.max(hr,x);}
+  boxes.push({l,t,r,b,head:(hl+hr)/2});
+ }
+ const scale=Math.min(218/Math.max(...boxes.map(b=>b.b-b.t+1)),220/Math.max(...boxes.map(b=>b.r-b.l+1)));
+ return Promise.all(frames.map(async(frame,i)=>{
+  const b=boxes[i],width=Math.round((b.r-b.l+1)*scale),height=Math.round((b.b-b.t+1)*scale);
+  const input=await sharp(frame).extract({left:b.l,top:b.t,width:b.r-b.l+1,height:b.b-b.t+1}).resize(width,height).png().toBuffer();
+  const left=Math.round(128-(b.head-b.l)*scale);
+  if(left<0||left+width>256)throw Error('Body registration would clip a frame');
+  return sharp({create:{width:256,height:256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite([{input,left,top:22}]).png().toBuffer();
+ }));
+}
+
+async function registerFloat(frames){
+ const boxes=[];
+ for(const frame of frames){const {data}=await sharp(frame).ensureAlpha().raw().toBuffer({resolveWithObject:true});let l=256,t=256,r=0,b=0;for(let y=0;y<256;y++)for(let x=0;x<256;x++)if(data[(y*256+x)*4+3]>192){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}boxes.push({l,t,r,b});}
+ const scale=230/Math.max(...boxes.map(b=>b.r-b.l+1));
+ return Promise.all(frames.map(async(frame,i)=>{const b=boxes[i],w=Math.round((b.r-b.l+1)*scale),h=Math.round((b.b-b.t+1)*scale);const input=await sharp(frame).extract({left:b.l,top:b.t,width:b.r-b.l+1,height:b.b-b.t+1}).resize(w,h).png().toBuffer();return sharp({create:{width:256,height:256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite([{input,left:Math.round((256-w)/2),top:Math.round((256-h)/2)}]).png().toBuffer();}));
 }

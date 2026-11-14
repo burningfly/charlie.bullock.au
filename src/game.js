@@ -91,24 +91,40 @@ function makeWorldTextures(scene) {
   });
 }
 
+// Blend poses at state changes; movement and idle each own a distinct animation.
+function transitionPose(scene,sprite,texture,animation){
+  if(sprite.poseGhost){scene.tweens.killTweensOf(sprite.poseGhost);sprite.poseGhost.destroy();}
+  scene.tweens.killTweensOf(sprite);
+  const ghost=scene.add.image(sprite.x,sprite.y,sprite.texture.key,sprite.frame.name).setOrigin(sprite.originX,sprite.originY).setScale(sprite.scaleX,sprite.scaleY).setFlipX(sprite.flipX).setAngle(sprite.angle).setDepth(sprite.depth+.1);
+  sprite.poseGhost=ghost;
+  sprite.anims.stop();sprite.setTexture(texture,0);
+  if(!reducedMotion)sprite.play(animation);
+  if(reducedMotion){ghost.destroy();sprite.poseGhost=null;sprite.setAlpha(1);return;}
+  sprite.setAlpha(0);
+  scene.tweens.add({targets:sprite,alpha:1,duration:140});
+  scene.tweens.add({targets:ghost,alpha:0,duration:140,onUpdate:()=>ghost.setPosition(sprite.x,sprite.y).setFlipX(sprite.flipX).setAngle(sprite.angle),onComplete:()=>{ghost.destroy();if(sprite.poseGhost===ghost)sprite.poseGhost=null;}});
+}
+
 class ReefScene extends Phaser.Scene {
   constructor() { super('ReefScene'); }
   init(data) { this.autoStart = Boolean(data?.autoStart); }
   preload() {
-    this.load.json('game-art-manifest','/images/game/manifest.json?v=village-rebuild-7');
+    this.load.json('game-art-manifest','/images/game/manifest.json?v=idle-transition-8');
     this.load.image('reef-print', '/images/game/reef.webp');
     for (const [key,file] of [['reef-diver','diver-swim'],['fish-reef','gold-swim'],['fish-moon','teal-swim'],['fish-coral','coral-swim'],['reef-shark','shark-swim'],['villager-0','malia-idle'],['villager-1','tane-idle'],['villager-2','piko-idle']]) {
-      this.load.spritesheet(key, `/images/game/${file}.webp?v=village-rebuild-7`, {frameWidth:256,frameHeight:256});
+      this.load.spritesheet(key, `/images/game/${file}.webp?v=idle-transition-8`, {frameWidth:256,frameHeight:256});
     }
-    this.load.image('town-restored','/images/game/town-restored.webp?v=village-rebuild-7');
-    this.load.image('town-panorama','/images/game/town-panorama.webp?v=village-rebuild-7');
-    this.load.spritesheet('shore-diver','/images/game/shore-walk.webp?v=village-rebuild-7',{frameWidth:256,frameHeight:256});
+    this.load.image('town-restored','/images/game/town-restored.webp?v=idle-transition-8');
+    this.load.image('town-panorama','/images/game/town-panorama.webp?v=idle-transition-8');
+    this.load.spritesheet('shore-idle','/images/game/shore-idle.webp?v=idle-transition-8',{frameWidth:256,frameHeight:256});
+    this.load.spritesheet('diver-float','/images/game/diver-float.webp?v=idle-transition-8',{frameWidth:256,frameHeight:256});
+    this.load.spritesheet('shore-diver','/images/game/shore-walk.webp?v=idle-transition-8',{frameWidth:256,frameHeight:256});
     this.load.image('boat-art','/images/game/boat.webp');
     this.load.image('shell-charm','/images/game/charm.webp');
   }
   create() {
     makeWorldTextures(this);
-    for(const [key,count,fps] of [['reef-diver',12,10],['fish-reef',8,8],['fish-moon',8,8],['fish-coral',8,8],['reef-shark',8,7],['villager-0',6,3],['villager-1',6,3],['villager-2',6,3]]){
+    for(const [key,count,fps] of [['diver-float',8,4],['shore-idle',8,4],['reef-diver',12,10],['fish-reef',8,8],['fish-moon',8,8],['fish-coral',8,8],['reef-shark',8,7],['villager-0',6,3],['villager-1',6,3],['villager-2',6,3]]){
       if(!this.anims.exists(key+'-loop'))this.anims.create({key:key+'-loop',frames:this.anims.generateFrameNumbers(key,{start:0,end:count-1}),frameRate:fps,repeat:-1});
     }
     this.game.canvas.dataset.scene='reef';
@@ -248,12 +264,12 @@ class ReefScene extends Phaser.Scene {
     const state=moving?'swimming':'floating';
     if(this.locomotionState!==state){
       this.locomotionState=state;
-      if(moving&&!reducedMotion)this.player.play('reef-diver-loop');
-      else {this.player.anims.stop();this.player.setFrame(2);}
+      transitionPose(this,this.player,moving?'reef-diver':'diver-float',moving?'reef-diver-loop':'diver-float-loop');
       this.game.canvas.dataset.scene='reef';
       this.game.canvas.dataset.swimmerState=state;
     }
     this.game.canvas.dataset.swimmerFrame=String(this.player.frame.name);
+    this.game.canvas.dataset.swimmerTexture=this.player.texture.key;
   }
   startDive() {
     if (this.activeDive) return;
@@ -435,7 +451,8 @@ class ShoreScene extends Phaser.Scene {
     this.paintRepairs();
     this.player=this.add.sprite(160,452,'shore-diver').setDisplaySize(116,116).setOrigin(.5,.94).setDepth(12);
     if(!this.anims.exists('shore-walk'))this.anims.create({key:'shore-walk',frames:this.anims.generateFrameNumbers('shore-diver',{start:0,end:7}),frameRate:10,repeat:-1});
-    this.cameras.main.startFollow(this.player,true,.08,.08);
+    this.cameras.main.startFollow(this.player,false,.08,.08);
+    this.walkState=null;this.setWalking(false);
     this.touch={x:0};this.target=null;
     this.keys=this.input.keyboard.addKeys('LEFT,RIGHT,A,D,SPACE');
     villagePlaces.forEach((v,i)=>{
@@ -480,12 +497,19 @@ class ShoreScene extends Phaser.Scene {
     this.game.canvas.dataset.repairs=JSON.stringify(saved.repairs);
     if(saved.sharedFish>0){for(const x of [335,680,990])this.repairLayer.add(this.add.circle(x,350,24,0xffce72,.15));}
   }
+  setWalking(moving){
+    const state=moving?'walking':'standing';
+    if(this.walkState!==state){this.walkState=state;transitionPose(this,this.player,moving?'shore-diver':'shore-idle',moving?'shore-walk':'shore-idle-loop');}
+    this.game.canvas.dataset.walkerState=state;this.game.canvas.dataset.walkerTexture=this.player.texture.key;this.game.canvas.dataset.walkerFrame=String(this.player.frame.name);
+  }
   update(time,delta){
     let direction=Number(this.keys.RIGHT.isDown||this.keys.D.isDown)-Number(this.keys.LEFT.isDown||this.keys.A.isDown)+(this.touch.x||0);
     if(direction)this.target=null;
     if(this.target!==null){if(Math.abs(this.target-this.player.x)<5)this.target=null;else direction=Math.sign(this.target-this.player.x);}
-    this.player.x=Phaser.Math.Clamp(this.player.x+direction*190*Math.min(delta,40)/1000,70,1730);
-    if(direction){this.player.setFlipX(direction<0);if(!reducedMotion&&!this.player.anims.isPlaying)this.player.play('shore-walk');}else{this.player.anims.stop();this.player.setFrame(2);}
+    const oldX=this.player.x;
+    this.player.x=Phaser.Math.Clamp(oldX+direction*190*Math.min(delta,40)/1000,70,1730);
+    if(direction)this.player.setFlipX(direction<0);
+    this.setWalking(Math.abs(this.player.x-oldX)>.01);
     if(Phaser.Input.Keyboard.JustDown(this.keys.SPACE))this.interact();
     this.game.canvas.dataset.villagePosition=String(Math.round(this.player.x));
   }
@@ -563,7 +587,7 @@ const game = new Phaser.Game({
   backgroundColor: '#2a7776',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: WIDTH, height: HEIGHT },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
-  render: { antialias: true, pixelArt: false, roundPixels: true },
+  render: { antialias: true, pixelArt: false, roundPixels: false },
   scene: [ReefScene, ShoreScene],
 });
 

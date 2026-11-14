@@ -116,6 +116,32 @@
     "visibleMaxWidth": 67,
     "visibleMaxHeight": 99
   },
+  "shore-idle": {
+    "file": "shore-idle.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 8,
+    "columns": 4,
+    "rows": 2,
+    "fps": 3,
+    "displayFrameSize": 116,
+    "visibleMaxWidth": 47,
+    "visibleMaxHeight": 99
+  },
+  "diver-float": {
+    "file": "diver-float.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 8,
+    "columns": 4,
+    "rows": 2,
+    "fps": 8,
+    "displayFrameSize": 150,
+    "visibleMaxWidth": 135,
+    "visibleMaxHeight": 125
+  },
   "reef": {
     "file": "reef.webp",
     "kind": "environment",

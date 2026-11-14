@@ -53,7 +53,7 @@ try {
   await page.keyboard.up('ArrowRight');
   await page.waitForFunction(()=>document.querySelector('#game-canvas').dataset.swimmerState==='floating');
   await page.waitForTimeout(250);
-  if(await page.locator('#game-canvas').getAttribute('data-swimmer-frame')!=='2')throw Error('The stopped diver kept swimming instead of holding the float pose.');
+  if(await page.locator('#game-canvas').getAttribute('data-swimmer-texture')!=='diver-float')throw Error('Stopped diver did not switch to the dedicated float animation.');
   await page.locator('#game-canvas').screenshot({ path: '/tmp/reefkeeper-after-move.png' });
   await page.keyboard.press('Space');
   if ((await page.locator('#haul-count').textContent()).trim() !== '1') throw new Error(`The diver could not catch the nearby fish (air ${await page.locator('#air-value').textContent()}, phase ${await page.locator('#phase-label').textContent()}, errors ${errors.join('; ')}).`);
@@ -138,6 +138,12 @@ try {
   if(await rebuild.locator('#wood-count').textContent()!=='1')throw Error('Salvage did not reach village inventory');
   await rebuild.locator('[data-visit="tane"]').click();
   await rebuild.waitForFunction(()=>Number(document.querySelector('#game-canvas').dataset.villagePosition)>800);
+  await rebuild.waitForFunction(()=>document.querySelector('#game-canvas').dataset.walkerState==='standing');
+  if(await rebuild.locator('#game-canvas').getAttribute('data-walker-texture')!=='shore-idle')throw Error('Walking did not transition to standing idle');
+  await rebuild.keyboard.down('ArrowRight');
+  await rebuild.waitForFunction(()=>document.querySelector('#game-canvas').dataset.walkerState==='walking');
+  await rebuild.keyboard.up('ArrowRight');
+  await rebuild.waitForFunction(()=>document.querySelector('#game-canvas').dataset.walkerState==='standing');
   if(!(await rebuild.locator('#night-message').textContent()).includes('1 timber'))throw Error('Town visit did not show builder request');
   await rebuild.locator('#game-canvas').screenshot({path:'/tmp/reefkeeper-town-workshop.png'});
   await rebuild.evaluate(()=>localStorage.setItem('reefkeeper-save',JSON.stringify({day:2,sharedFish:6,wood:3,shells:8,species:{moon:2}})));

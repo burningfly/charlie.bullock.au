@@ -28,3 +28,9 @@ New production art, generated with the built-in image tool:
 ## Regression checks
 
 `npm run test:e2e` covers keyboard/touch diving, catch, float vs swim, charm, return, food, score submission and offline behavior, next day and saved progress; additionally real-control timber collection, village walking and destinations, repairs and timber expenditure, species reward, market upgrade, repair persistence, and mobile overflow. Multi-day progression uses a seeded save to avoid repetitive grinding in tests.
+
+## Movement-state correction
+
+Standing and floating use dedicated eight-frame idle sheets, generated with the built-in image tool. Shore idle brief: same character and print style, side profile, both bare feet planted, arms relaxed, subtle breathing/blink, transparent 4x2 atlas. Floating brief: same diver and basket, relaxed slightly diagonal hover, both hands at basket, no swim strokes or alternating kicks, eight transparent frames. Float generation required a background-removal correction.
+
+Assets: `art/source/shore-idle.png` and `art/source/diver-float.png`, exported beside the other game atlases. State changes blend poses over 140ms; reduced-motion mode uses a static idle pose. Walking is registered around a stable head/body anchor instead of the alternating contact foot. Camera rendering preserves fractional pixels.
