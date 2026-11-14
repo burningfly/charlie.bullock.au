@@ -48,3 +48,9 @@ The Playwright smoke checks launch Chromium headlessly against the local Pages p
 - `migrations/` — D1 schema migrations
 - `docs/first-game-requirements.md` — game requirements
 - `AGENTS.md` — instructions for coding agents
+
+## Illustrated art pack
+
+`docs/game-art-pack.md` contains the drawing briefs, scale contract, pose sequences and review results. `art/source/` holds the 12 selected imagegen PNG sources and provenance. `public/images/game/` holds the optimized game assets and a frame/scale manifest. Eight animation sheets provide 62 authored frames.
+
+Run `npm run art:prepare` to validate alpha, register villager feet, and rebuild the WebP atlases. Run `npm run art:preview` to render the moving scale comparison into the workspace outputs folder. The published game uses these generated illustrations; discarded near-duplicate or clipped candidates are excluded.

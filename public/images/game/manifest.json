@@ -1,0 +1,118 @@
+{
+  "diver-swim": {
+    "file": "diver-swim.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 12,
+    "columns": 4,
+    "rows": 3,
+    "fps": 10,
+    "displayFrameSize": 150
+  },
+  "gold-swim": {
+    "file": "gold-swim.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 8,
+    "columns": 4,
+    "rows": 2,
+    "fps": 8,
+    "displayFrameSize": 56
+  },
+  "teal-swim": {
+    "file": "teal-swim.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 8,
+    "columns": 4,
+    "rows": 2,
+    "fps": 8,
+    "displayFrameSize": 66
+  },
+  "coral-swim": {
+    "file": "coral-swim.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 8,
+    "columns": 4,
+    "rows": 2,
+    "fps": 8,
+    "displayFrameSize": 66
+  },
+  "shark-swim": {
+    "file": "shark-swim.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 8,
+    "columns": 4,
+    "rows": 2,
+    "fps": 7,
+    "displayFrameSize": 260
+  },
+  "malia-idle": {
+    "file": "malia-idle.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 6,
+    "columns": 3,
+    "rows": 2,
+    "fps": 3,
+    "displayFrameSize": 128
+  },
+  "tane-idle": {
+    "file": "tane-idle.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 6,
+    "columns": 3,
+    "rows": 2,
+    "fps": 3,
+    "displayFrameSize": 128
+  },
+  "piko-idle": {
+    "file": "piko-idle.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 6,
+    "columns": 3,
+    "rows": 2,
+    "fps": 3,
+    "displayFrameSize": 104
+  },
+  "reef": {
+    "file": "reef.webp",
+    "kind": "environment",
+    "width": 1620,
+    "height": 540
+  },
+  "village-night": {
+    "file": "village-night.webp",
+    "kind": "environment",
+    "width": 960,
+    "height": 540
+  },
+  "boat": {
+    "file": "boat.webp",
+    "kind": "prop",
+    "displaySize": [
+      180,
+      90
+    ]
+  },
+  "charm": {
+    "file": "charm.webp",
+    "kind": "prop",
+    "displaySize": [
+      28,
+      28
+    ]
+  }
+}

@@ -5,12 +5,16 @@
   "scripts": {
     "build": "node scripts/build.mjs && node scripts/check-public.mjs",
     "dev": "wrangler pages dev public --port 8788 --compatibility-date=2026-05-03",
-    "test:e2e": "npm run build && node tests/e2e.mjs"
+    "test:e2e": "npm run build && node tests/e2e.mjs",
+    "art:prepare": "node scripts/prepare-game-art.mjs",
+    "art:preview": "node scripts/preview-game-art.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.27.3",
+    "gifenc": "^1.0.3",
     "phaser": "^3.90.0",
     "playwright": "^1.65.1",
+    "sharp": "^0.34.5",
     "wrangler": "^4.0.0"
   }
 }

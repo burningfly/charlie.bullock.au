@@ -1,0 +1,91 @@
+{
+  "tool": "built-in image_gen",
+  "styleReference": "public/images/reefkeeper-key-art.png",
+  "promptSet": "docs/game-art-pack.md",
+  "assets": [
+    {
+      "name": "reef",
+      "file": "reef.png",
+      "generatedFile": "exec-6dfbd490-d066-496e-b279-0645be23dee7.png",
+      "width": 2172,
+      "height": 724
+    },
+    {
+      "name": "diver-swim",
+      "file": "diver-swim.png",
+      "generatedFile": "exec-1d219568-0c52-4e50-a17e-e94bfb743fe9.png",
+      "width": 1448,
+      "height": 1086
+    },
+    {
+      "name": "gold-swim",
+      "file": "gold-swim.png",
+      "generatedFile": "exec-1acf3524-1ec9-420f-89d5-a8de94ba61fc.png",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "name": "teal-swim",
+      "file": "teal-swim.png",
+      "generatedFile": "exec-3e99d3b6-6493-43a0-9b85-913e8046766f.png",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "name": "coral-swim",
+      "file": "coral-swim.png",
+      "generatedFile": "exec-c2fbbe9c-9da3-4ad2-ab33-bcecee70e061.png",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "name": "shark-swim",
+      "file": "shark-swim.png",
+      "generatedFile": "exec-972396f3-3453-4c8e-9ac3-5455d6ca81b0.png",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "name": "malia-idle",
+      "file": "malia-idle.png",
+      "generatedFile": "exec-b14881b1-c89a-481a-ade2-9114d3429289.png",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "name": "tane-idle",
+      "file": "tane-idle.png",
+      "generatedFile": "exec-fbaf7e45-0a50-4f0e-8c40-15c800ed2611.png",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "name": "piko-idle",
+      "file": "piko-idle.png",
+      "generatedFile": "exec-292c5b19-0999-4c00-850c-39e59071f0f8.png",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "name": "boat",
+      "file": "boat.png",
+      "generatedFile": "exec-4c3005fe-76d1-4811-90d5-2e45c9f6c40c.png",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "name": "charm",
+      "file": "charm.png",
+      "generatedFile": "exec-e113d3e1-d463-4f9c-b076-961661096bb6.png",
+      "width": 1402,
+      "height": 1122
+    },
+    {
+      "name": "village-night",
+      "file": "village-night.png",
+      "generatedFile": "exec-612a4014-bb9c-4887-863f-208817d47847.png",
+      "width": 1672,
+      "height": 941
+    }
+  ]
+}

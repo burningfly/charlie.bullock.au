@@ -149,12 +149,19 @@ class ReefScene extends Phaser.Scene {
   constructor() { super('ReefScene'); }
   init(data) { this.autoStart = Boolean(data?.autoStart); }
   preload() {
-    this.load.svg('reef-print', '/images/reef-print.svg');
-    this.load.svg('reef-diver', '/images/diver-print.svg');
-    for (const name of ['reef', 'moon', 'coral']) this.load.svg(`fish-${name}`, `/images/fish-print-${name}.svg`);
+    this.load.image('reef-print', '/images/game/reef.webp');
+    for (const [key,file] of [['reef-diver','diver-swim'],['fish-reef','gold-swim'],['fish-moon','teal-swim'],['fish-coral','coral-swim'],['reef-shark','shark-swim'],['villager-0','malia-idle'],['villager-1','tane-idle'],['villager-2','piko-idle']]) {
+      this.load.spritesheet(key, `/images/game/${file}.webp`, {frameWidth:256,frameHeight:256});
+    }
+    this.load.image('village-art','/images/game/village-night.webp');
+    this.load.image('boat-art','/images/game/boat.webp');
+    this.load.image('shell-charm','/images/game/charm.webp');
   }
   create() {
     makeWorldTextures(this);
+    for(const [key,count,fps] of [['reef-diver',12,10],['fish-reef',8,8],['fish-moon',8,8],['fish-coral',8,8],['reef-shark',8,7],['villager-0',6,3],['villager-1',6,3],['villager-2',6,3]]){
+      if(!this.anims.exists(key+'-loop'))this.anims.create({key:key+'-loop',frames:this.anims.generateFrameNumbers(key,{start:0,end:count-1}),frameRate:fps,repeat:-1});
+    }
     this.activeDive = false;
     this.bumpReady = true;
     this.touch = { x: 0, y: 0 };
@@ -163,8 +170,9 @@ class ReefScene extends Phaser.Scene {
     this.fishList = [];
     this.makeBackground();
     this.makeReefObjects();
-    this.player = this.physics.add.sprite(145, 255, 'reef-diver').setDepth(10);
-    this.player.setBodySize(48, 46).setCollideWorldBounds(true).setDrag(620, 620).setMaxVelocity(220, 180);
+    this.player = this.physics.add.sprite(145, 255, 'reef-diver').setDisplaySize(150,150).setDepth(10);
+    this.player.setBodySize(100, 75).setCollideWorldBounds(true).setDrag(620, 620).setMaxVelocity(220, 180);
+    if(!reducedMotion)this.player.play('reef-diver-loop');
     this.physics.world.setBounds(0, 112, WORLD_WIDTH, 360);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, HEIGHT);
     this.cameras.main.startFollow(this.player, true, .08, .08);
@@ -220,9 +228,9 @@ class ReefScene extends Phaser.Scene {
     }
     const waves = this.add.graphics().setDepth(2); waves.lineStyle(2, 0xd1ecdb, .48);
     for (let x = 0; x < WORLD_WIDTH; x += 140) { waves.beginPath(); waves.moveTo(x, 86); waves.lineTo(x + 65, 86); waves.lineTo(x + 85, 90); waves.lineTo(x + 125, 90); waves.strokePath(); }
-    this.add.image(0, 0, 'reef-print').setOrigin(0).setDepth(2);
-    const home = this.add.container(55, 158).setDepth(5);
-    const boat = this.add.graphics(); boat.fillStyle(0x173f40); boat.fillPoints([new Phaser.Geom.Point(0, 12), new Phaser.Geom.Point(72, 12), new Phaser.Geom.Point(59, 30), new Phaser.Geom.Point(15, 30)], true); boat.fillStyle(0xf2c768); boat.fillRect(35, -12, 3, 28); boat.fillTriangle(38, -10, 56, 5, 38, 6); home.add(boat);
+    this.add.image(0,0,'reef-print').setOrigin(0).setDepth(2);
+    this.add.image(1620,0,'reef-print').setOrigin(0).setFlipX(true).setDepth(2);
+    this.add.image(85,150,'boat-art').setDisplaySize(180,90).setDepth(5);
     this.add.text(19, 185, 'YOUR BOAT', { fontFamily: 'system-ui', fontSize: '11px', color: '#173f40', fontStyle: 'bold', backgroundColor: '#f3e8c6', padding: { x: 5, y: 3 } }).setDepth(6);
   }
   makeReefObjects() {
@@ -233,19 +241,21 @@ class ReefScene extends Phaser.Scene {
       [1570, 215, 'fish-reef', 'reef dart'], [1775, 340, 'fish-moon', 'moonfin'], [2060, 266, 'fish-coral', 'coral wrasse'],
     ];
     fishDefs.forEach(([x, y, texture, name], index) => {
-      const sprite = this.fishGroup.create(x, y, texture).setDepth(7);
-      sprite.setBodySize(38, 23); sprite.body.setAllowGravity(false); sprite.setData({ name, baseY: y, phase: index * .91, pace: 16 + (index % 3) * 8 });
+      const sprite = this.fishGroup.create(x, y, texture).setDisplaySize(texture==='fish-reef'?56:66,texture==='fish-reef'?56:66).setDepth(7);
+      if(!reducedMotion)sprite.play(texture+'-loop');
+      sprite.setBodySize(160, 100); sprite.body.setAllowGravity(false); sprite.setData({ name, baseY: y, phase: index * .91, pace: 16 + (index % 3) * 8 });
       this.fishList.push(sprite);
     });
-    this.predator = this.physics.add.sprite(1155, 314, 'reef-shark').setDepth(8).setImmovable(true);
-    this.predator.body.setAllowGravity(false).setSize(92, 38);
+    this.predator = this.physics.add.sprite(1155, 314, 'reef-shark').setDisplaySize(260,260).setDepth(8).setImmovable(true);
+    this.predator.body.setAllowGravity(false).setSize(160,40);
+    if(!reducedMotion)this.predator.play('reef-shark-loop');
     this.predatorBaseX = 1155;
-    this.charm = this.physics.add.staticSprite(315, 400, 'shell-charm').setDepth(9);
+    this.charm = this.physics.add.staticSprite(315, 400, 'shell-charm').setDisplaySize(28,28).setDepth(9);
     this.charm.refreshBody();
     const marker = this.add.text(315, 369, '✦ LOST CHARM', { fontFamily: 'system-ui', fontSize: '10px', color: '#183b3b', fontStyle: 'bold', backgroundColor: '#f3e7bd', padding: { x: 5, y: 3 } }).setOrigin(.5).setDepth(9);
     this.charmMarker = marker;
     const coralPositions = [[170,472,.82],[410,474,1.04],[780,473,1.2],[1010,475,.9],[1470,474,1.2],[1850,476,.85],[2280,474,1.12]];
-    coralPositions.forEach(([x,y,scale],i)=>this.add.image(x,y,i%2?'reef-seaweed':'reef-coral').setOrigin(.5,1).setScale(scale).setDepth(3));
+    // Reef scenery is painted into the illustrated environment layer.
     this.add.text(WORLD_WIDTH-165, 137, 'SWIM HOME  ←', { fontFamily: 'system-ui', fontSize: '11px', color: '#173f40', fontStyle: 'bold', backgroundColor: '#f3e8c6', padding: { x: 6, y: 4 } }).setDepth(6);
   }
   startDive() {
@@ -298,13 +308,13 @@ class ReefScene extends Phaser.Scene {
         const overlap = this.physics.add.overlap(shot, fish, () => {
           if (hit || !fish.visible) return;
           hit = true; shot.destroy(); this.physics.world.removeCollider(overlap);
-          this.tweens.add({ targets: fish, x: this.player.x + 10, y: this.player.y + 28, alpha: 0, scale: .25, duration: 230, onComplete: () => fish.disableBody(true, true) });
+          this.tweens.add({ targets: fish, x: this.player.x + 10, y: this.player.y + 28, alpha: 0, scaleX: fish.scaleX*.25, scaleY:fish.scaleY*.25, duration: 230, onComplete: () => fish.disableBody(true, true) });
           this.celebrateCatch(fish.x,fish.y); trip.haul += 1; updateHud(); toast(`Spear shot! Caught a ${fish.getData('name')}.`); chirp(650,.09);
         });
         this.time.delayedCall(950, () => { if (shot.active) shot.destroy(); if (!hit) fish.setData('caught', false); this.physics.world.removeCollider(overlap); });
         toast('Spear away!'); chirp(360,.05); return;
       }
-      this.tweens.add({ targets: fish, x: this.player.x + 10, y: this.player.y + 28, alpha: 0, scale: .25, duration: 230, onComplete: () => fish.disableBody(true, true) });
+      this.tweens.add({ targets: fish, x: this.player.x + 10, y: this.player.y + 28, alpha: 0, scaleX: fish.scaleX*.25, scaleY:fish.scaleY*.25, duration: 230, onComplete: () => fish.disableBody(true, true) });
       this.celebrateCatch(fish.x,fish.y); trip.haul += 1; updateHud(); toast(`Caught a ${fish.getData('name')}!`); chirp(650,.09); return;
     }
     toast('Swim close to a fish or the lost charm first.');
@@ -355,12 +365,13 @@ class ReefScene extends Phaser.Scene {
     if (!reducedMotion) this.player.setAngle(Phaser.Math.Clamp(vy * 4,-10,10)); else this.player.setAngle(0);
     this.game.canvas.dataset.playerPosition = `${Math.round(this.player.x)},${Math.round(this.player.y)}`;
     this.fishList.forEach((fish) => {
-      if (!fish.active) return;
+      if (!fish.active || fish.getData('caught')) return;
       const phase = fish.getData('phase'); const drift = Math.sin(time / 850 + phase) * fish.getData('pace');
       fish.setVelocityX(drift); fish.y = fish.getData('baseY') + Math.sin(time / 430 + phase) * 7;
       fish.setFlipX(drift < 0);
     });
     this.predator.x = this.predatorBaseX + Math.sin(time / 1700) * 78;
+    this.predator.setFlipX(Math.cos(time / 1700)>0);
     this.predator.y = 315 + Math.sin(time / 850) * 52;
   }
 }
@@ -369,29 +380,22 @@ class ShoreScene extends Phaser.Scene {
   constructor() { super('ShoreScene'); }
   create() {
     makeWorldTextures(this);
-    const sky = this.add.graphics(); sky.fillGradientStyle(0x7c6b80,0x7c6b80,0xd89472,0xd89472,1); sky.fillRect(0,0,WIDTH,HEIGHT);
-    sky.fillStyle(0xf1cc7b,1); sky.fillCircle(786,87,39);
-    for(let i=0;i<4;i++){
-      const x=60+i*258; this.add.image(x+78,236,'village-house').setScale(1.02+(i%2)*.04);
-    }
-    this.repairs = this.add.graphics().setDepth(3);
-    this.paintRepairs();
-    this.game.events.on('village-repaired', this.paintRepairs, this);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.game.events.off('village-repaired', this.paintRepairs, this));
-    const water=this.add.graphics();water.fillStyle(0x246967,1);water.fillRect(0,350,WIDTH,190);water.lineStyle(3,0x96cabb,.7);
-    for(let y=374;y<530;y+=24){water.beginPath();water.moveTo(0,y);water.lineTo(160,y-5);water.lineTo(320,y);water.lineTo(485,y+4);water.lineTo(650,y);water.lineTo(810,y-4);water.lineTo(960,y);water.strokePath();}
-    const dock=this.add.graphics();dock.fillStyle(0xa37c4e,1);dock.fillRect(0,345,WIDTH,19);dock.fillStyle(0xc19a60,1);for(let x=20;x<WIDTH;x+=83)dock.fillRect(x,339,12,50);
-    for(let i=0;i<5;i++){const x=116+i*178;this.add.circle(x,290,18,0xffc867,.15);const lamp=this.add.rectangle(x,287,12,22,0xf0c567).setStrokeStyle(2,0x514a38);this.tweens.add({targets:lamp,alpha:.65,duration:1400+yoyoJitter(i),yoyo:true,repeat:-1});}
+    this.add.image(480,337.5,'village-art').setDisplaySize(1200,675);
+    this.repairs=this.add.graphics().setDepth(1);this.paintRepairs();
+    this.game.events.on('village-repaired',this.paintRepairs,this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.game.events.off('village-repaired',this.paintRepairs,this));
     const villagers=[
       {id:'malia',name:'Malia · Cook',x:210,color:0},
       {id:'tane',name:'Tane · Builder',x:475,color:1},
       {id:'piko',name:'Piko · Explorer',x:740,color:2},
     ];
     villagers.forEach(v=>{
-      const sprite=this.add.image(v.x,315,`villager-${v.color}`).setInteractive({useHandCursor:true});
+      const sprite=this.add.sprite(v.x,v.id==='piko'?310:300,`villager-${v.color}`).setDisplaySize(v.id==='piko'?104:128,v.id==='piko'?104:128).setInteractive({useHandCursor:true});
+      if(!reducedMotion)sprite.play(`villager-${v.color}-loop`);
+      const baseScale=sprite.scaleX;
       this.add.text(v.x,370,v.name,{fontFamily:'system-ui',fontSize:'11px',fontStyle:'bold',color:'#173f40',backgroundColor:'#f4e7c6',padding:{x:5,y:4}}).setOrigin(.5);
       sprite.on('pointerdown',()=>this.game.events.emit('villager-talk',v.id));
-      sprite.on('pointerover',()=>sprite.setScale(1.08));sprite.on('pointerout',()=>sprite.setScale(1));
+      sprite.on('pointerover',()=>sprite.setScale(baseScale*1.08));sprite.on('pointerout',()=>sprite.setScale(baseScale));
     });
     this.add.text(480,426,'CLICK A NEIGHBOUR TO TALK',{fontFamily:'system-ui',fontSize:'11px',fontStyle:'bold',color:'#f6e9c9',backgroundColor:'#164c4ccc',padding:{x:8,y:5}}).setOrigin(.5);
     this.add.text(480,485,'SHARE DINNER · TALK · REST',{fontFamily:'Georgia',fontSize:'23px',fontStyle:'bold',color:'#f7e8c2'}).setOrigin(.5);
@@ -400,15 +404,12 @@ class ShoreScene extends Phaser.Scene {
   }
   paintRepairs() {
     const g = this.repairs; g.clear();
-    const count = Math.min(4, Math.ceil(saved.sharedFish / 2));
-    for (let i=0; i<count; i++) {
-      const x=60+i*258;
-      g.fillStyle(0x91b7a2); g.fillTriangle(x-7, 224, x+42, 164, x+181, 224);
-      g.lineStyle(3,0x172c2d); g.strokeTriangle(x-7,224,x+42,164,x+181,224);
-      for(let j=0;j<6;j++) g.lineBetween(x+19+j*23,205,x+34+j*23,222);
-      g.fillStyle(0xf2c768); g.fillRect(x+14,247,34,31);g.fillRect(x+94,247,34,31);
+    if(saved.sharedFish>0){
+      const count=Math.min(5,Math.ceil(saved.sharedFish/2));
+      for(let i=0;i<count;i++){g.fillStyle(0xffc76b,.16);g.fillCircle(110+i*170,265,26);g.fillStyle(0xffd987,.8);g.fillRect(105+i*170,258,10,14);}
     }
   }
+
   nextDay() {
     saved.day += 1; persist(); trip.active=false; trip.shared=false; trip.foundCharm=false; trip.speaker=0;
     ui.night.hidden=true;ui.scoreForm.hidden=true;ui.returnButton.disabled=true;ui.phase.textContent='READY TO DIVE';
