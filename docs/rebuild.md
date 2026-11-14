@@ -48,3 +48,21 @@ Assets: `art/source/shore-idle.png` and `art/source/diver-float.png`, exported b
 Interior art was generated with the built-in image tool from the approved town style. Source: `art/source/room-interiors.png`. Brief: three equal-height 16:9 interior panels stacked vertically—communal kitchen with stove and table; family home with beds and hammock; carpenter workshop with tool rack and canoe. Side-on stage, clear floor for actors, no people or text, same fun linocut palette and original geometric motifs. Export: `room-kitchen.webp`, `room-home.webp`, `room-workshop.webp` under `public/images/game/`.
 
 Next priorities after this update: a richer fish collection journal, more reef layouts across days, and a proper save of an unfinished dive/night rather than only persistent village progress.
+
+## Idle diver scale and transparency fix
+
+The previous float export normalized a compact resting pose to 230px wide, enlarging the head and torso relative to the swim pose. Float frames now use a 180px maximum silhouette width and a 9px left registration offset, visually calibrated to the swim head size/location. Both states retain the same 256px frame and 150px display canvas; the relaxed pose naturally has a shorter overall reach.
+
+Replaced `art/source/diver-float.png` using built-in image generation with the swim sheet as reference: eight relaxed horizontal hovering poses, hands on basket, legs together, same head/body proportions, clean true alpha, generous empty margins, texture only inside the character and no shadows/glow/paper outside. The previous source contained translucent rectangular haze in the first four frames. `tests/diver-art.mjs` now rejects opaque corners and translucent pixels separated from the solid silhouette, across all eight exported frames.
+
+## In-world interaction and merchant
+
+The quest log is now read-only and remains visible during dives. It tracks repairs, supper goals and the merchant's schedule without offering action buttons. Gameplay choices live inside the game viewport: Malia handles supper, Tane handles repair planning, the home provides rest, Piko hosts the celebration, and the merchant sells gear. Touch movement/action controls are also inside the viewport.
+
+Clicking a distant building or NPC queues a walk to within interaction range before opening the encounter. Space prompts appear only within 105 world pixels of a usable destination, and disappear while walking away, in dialogue, or in a choice panel. The empty market has no talk prompt on off days.
+
+The merchant has a six-frame breathing/blinking idle sheet, present only on even days and animated at its own pace. Built-in image generation used the town art as style reference: friendly adult male travelling merchant, woven sun hat, ochre shirt with teal geometric trim, coral sash, shorts, bare feet and satchel of diving tools; full body, 3x2 grid, true alpha. A correction kept the hands close to the body and added generous cell margins to prevent clipping. Source `art/source/merchant-idle.png`; exported `public/images/game/merchant-idle.webp`.
+
+Tests navigate via world movement and doors rather than external destination buttons. They verify a button-free log, proximity prompts, approach-before-entry, contextual repairs/trading/supper/rest/celebration, merchant appearance by day, mobile controls, persistence and reset.
+
+Town Space interaction uses key-down events rather than frame polling, so short taps are not lost between updates. Choice panels and dialogue hide the proximity prompt while open. Merchant standing position is offset from the interaction point so the player does not cover him when trading.

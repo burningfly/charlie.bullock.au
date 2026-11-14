@@ -139,8 +139,21 @@
     "rows": 2,
     "fps": 8,
     "displayFrameSize": 150,
-    "visibleMaxWidth": 135,
-    "visibleMaxHeight": 125
+    "visibleMaxWidth": 105,
+    "visibleMaxHeight": 79
+  },
+  "merchant-idle": {
+    "file": "merchant-idle.webp",
+    "kind": "animation",
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frames": 6,
+    "columns": 3,
+    "rows": 2,
+    "fps": 3,
+    "displayFrameSize": 128,
+    "visibleMaxWidth": 48,
+    "visibleMaxHeight": 109
   },
   "reef": {
     "file": "reef.webp",

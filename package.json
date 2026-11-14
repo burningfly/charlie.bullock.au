@@ -5,7 +5,7 @@
   "scripts": {
     "build": "node scripts/build.mjs && node scripts/check-public.mjs",
     "dev": "wrangler pages dev public --port 8788 --compatibility-date=2026-05-03",
-    "test:e2e": "npm run build && node tests/e2e.mjs",
+    "test:e2e": "npm run build && node tests/diver-art.mjs && node tests/e2e.mjs",
     "art:prepare": "node scripts/prepare-game-art.mjs",
     "art:preview": "node scripts/preview-game-art.mjs"
   },

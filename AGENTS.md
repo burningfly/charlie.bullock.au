@@ -42,3 +42,9 @@
 - All dialogue should call `presentDialogue()` to show the in-game conversation, not only update below-canvas text. Room touch actions need their own handler; paused shore handlers must not process them.
 - New Game pauses play and confirms before clearing only `reefkeeper-save`. Never clear all origin storage or shared scores.
 - Interior atlas source is `art/source/room-interiors.png`, exported in thirds by `art:prepare`. Extra tests cover doors, room conversation/touch, leave/rest, reset cancellation and confirmation, repair discounts, and celebration.
+
+## Interaction rule
+
+- Keep `#night-overlay` / quest log read-only. Do not add gameplay buttons or navigation there. Contextual choices belong to `#action-panel` inside `#canvas-wrap`, opened by the relevant NPC/room.
+- Distant clicks should approach a place, not interact remotely. Space hints require `nearestPlace()` to return a usable destination within105px; no merchant interaction on absent days.
+- Merchant source/export uses six3x2frames. Preserve corrected diver float scale and transparency; run `tests/diver-art.mjs` alongside E2E.

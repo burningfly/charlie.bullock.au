@@ -7,7 +7,7 @@ const root=path.resolve(import.meta.dirname,'..');
 const source=path.join(root,'art/source');
 const dest=path.join(root,'public/images/game');
 await fs.mkdir(dest,{recursive:true});
-const sheets={ 'diver-swim':[4,3], 'gold-swim':[4,2], 'teal-swim':[4,2], 'coral-swim':[4,2], 'shark-swim':[4,2], 'malia-idle':[3,2], 'tane-idle':[3,2], 'piko-idle':[3,2], 'shore-walk':[4,2], 'shore-idle':[4,2], 'diver-float':[4,2] };
+const sheets={ 'diver-swim':[4,3], 'gold-swim':[4,2], 'teal-swim':[4,2], 'coral-swim':[4,2], 'shark-swim':[4,2], 'malia-idle':[3,2], 'tane-idle':[3,2], 'piko-idle':[3,2], 'shore-walk':[4,2], 'shore-idle':[4,2], 'diver-float':[4,2], 'merchant-idle':[3,2] };
 const manifest={};
 for(const [name,[cols,rows]] of Object.entries(sheets)){
  const file=path.join(source,name+'.png');
@@ -29,7 +29,7 @@ for(const [name,[cols,rows]] of Object.entries(sheets)){
  for(const frame of frames){const {data}=await sharp(frame).ensureAlpha().raw().toBuffer({resolveWithObject:true});let l=256,r=0,t=256,b=0;for(let y=0;y<256;y++)for(let x=0;x<256;x++)if(data[(y*256+x)*4+3]>128){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}frameBounds.push({width:r-l+1,height:b-t+1});}
  const targetFishLength={'gold-swim':48,'teal-swim':54,'coral-swim':58}[name];
  const maxVisibleWidth=Math.max(...frameBounds.map(b=>b.width));
- const displaySize=targetFishLength?Math.round(targetFishLength*256/maxVisibleWidth):{'diver-swim':150,'shark-swim':260,'malia-idle':128,'tane-idle':128,'piko-idle':104,'shore-walk':116,'shore-idle':116,'diver-float':150}[name];
+ const displaySize=targetFishLength?Math.round(targetFishLength*256/maxVisibleWidth):{'diver-swim':150,'shark-swim':260,'malia-idle':128,'tane-idle':128,'piko-idle':104,'shore-walk':116,'shore-idle':116,'diver-float':150,'merchant-idle':128}[name];
  manifest[name]={file:name+'.webp',kind:'animation',frameWidth:256,frameHeight:256,frames:cols*rows,columns:cols,rows,fps:name==='diver-swim'?10:name==='shark-swim'?7:name.endsWith('-idle')?3:8,displayFrameSize:displaySize,visibleMaxWidth:Math.round(maxVisibleWidth*displaySize/256),visibleMaxHeight:Math.round(Math.max(...frameBounds.map(b=>b.height))*displaySize/256)};
  if(name==='diver-swim'){
   const gif=GIFEncoder();
@@ -100,6 +100,7 @@ async function registerBody(frames){
 async function registerFloat(frames){
  const boxes=[];
  for(const frame of frames){const {data}=await sharp(frame).ensureAlpha().raw().toBuffer({resolveWithObject:true});let l=256,t=256,r=0,b=0;for(let y=0;y<256;y++)for(let x=0;x<256;x++)if(data[(y*256+x)*4+3]>192){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}boxes.push({l,t,r,b});}
- const scale=230/Math.max(...boxes.map(b=>b.r-b.l+1));
- return Promise.all(frames.map(async(frame,i)=>{const b=boxes[i],w=Math.round((b.r-b.l+1)*scale),h=Math.round((b.b-b.t+1)*scale);const input=await sharp(frame).extract({left:b.l,top:b.t,width:b.r-b.l+1,height:b.b-b.t+1}).resize(w,h).png().toBuffer();return sharp({create:{width:256,height:256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite([{input,left:Math.round((256-w)/2),top:Math.round((256-h)/2)}]).png().toBuffer();}));
+ // Calibrated against the swim atlas head/goggles, not the extended flipper-to-hand span.
+ const scale=180/Math.max(...boxes.map(b=>b.r-b.l+1));
+ return Promise.all(frames.map(async(frame,i)=>{const b=boxes[i],w=Math.round((b.r-b.l+1)*scale),h=Math.round((b.b-b.t+1)*scale);const input=await sharp(frame).extract({left:b.l,top:b.t,width:b.r-b.l+1,height:b.b-b.t+1}).resize(w,h).png().toBuffer();return sharp({create:{width:256,height:256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite([{input,left:Math.round((256-w)/2)-9,top:Math.round((256-h)/2)}]).png().toBuffer();}));
 }
