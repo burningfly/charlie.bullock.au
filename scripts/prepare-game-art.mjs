@@ -23,7 +23,12 @@ for(const [name,[cols,rows]] of Object.entries(sheets)){
  }
  if(name.endsWith('-idle')) frames=await registerFeet(frames);
  await sharp({create:{width:cols*256,height:rows*256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite(frames.map((input,i)=>({input,left:(i%cols)*256,top:Math.floor(i/cols)*256}))).webp({lossless:true}).toFile(path.join(dest,name+'.webp'));
- manifest[name]={file:name+'.webp',kind:'animation',frameWidth:256,frameHeight:256,frames:cols*rows,columns:cols,rows,fps:name==='diver-swim'?10:name==='shark-swim'?7:name.endsWith('-idle')?3:8,displayFrameSize:{'diver-swim':150,'gold-swim':56,'teal-swim':66,'coral-swim':66,'shark-swim':260,'malia-idle':128,'tane-idle':128,'piko-idle':104}[name]};
+ const frameBounds=[];
+ for(const frame of frames){const {data}=await sharp(frame).ensureAlpha().raw().toBuffer({resolveWithObject:true});let l=256,r=0,t=256,b=0;for(let y=0;y<256;y++)for(let x=0;x<256;x++)if(data[(y*256+x)*4+3]>128){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}frameBounds.push({width:r-l+1,height:b-t+1});}
+ const targetFishLength={'gold-swim':48,'teal-swim':54,'coral-swim':58}[name];
+ const maxVisibleWidth=Math.max(...frameBounds.map(b=>b.width));
+ const displaySize=targetFishLength?Math.round(targetFishLength*256/maxVisibleWidth):{'diver-swim':150,'shark-swim':260,'malia-idle':128,'tane-idle':128,'piko-idle':104}[name];
+ manifest[name]={file:name+'.webp',kind:'animation',frameWidth:256,frameHeight:256,frames:cols*rows,columns:cols,rows,fps:name==='diver-swim'?10:name==='shark-swim'?7:name.endsWith('-idle')?3:8,displayFrameSize:displaySize,visibleMaxWidth:Math.round(maxVisibleWidth*displaySize/256),visibleMaxHeight:Math.round(Math.max(...frameBounds.map(b=>b.height))*displaySize/256)};
  if(name==='diver-swim'){
   const gif=GIFEncoder();
   for(const frame of frames){const rgba=await sharp(frame).flatten({background:'#236d69'}).ensureAlpha().raw().toBuffer();const palette=quantize(rgba,256);const index=applyPalette(rgba,palette);gif.writeFrame(index,256,256,{palette,delay:110});}

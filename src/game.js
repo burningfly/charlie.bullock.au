@@ -149,9 +149,10 @@ class ReefScene extends Phaser.Scene {
   constructor() { super('ReefScene'); }
   init(data) { this.autoStart = Boolean(data?.autoStart); }
   preload() {
+    this.load.json('game-art-manifest','/images/game/manifest.json?v=balanced-fish-6');
     this.load.image('reef-print', '/images/game/reef.webp');
     for (const [key,file] of [['reef-diver','diver-swim'],['fish-reef','gold-swim'],['fish-moon','teal-swim'],['fish-coral','coral-swim'],['reef-shark','shark-swim'],['villager-0','malia-idle'],['villager-1','tane-idle'],['villager-2','piko-idle']]) {
-      this.load.spritesheet(key, `/images/game/${file}.webp?v=simple-fish-idle-5`, {frameWidth:256,frameHeight:256});
+      this.load.spritesheet(key, `/images/game/${file}.webp?v=balanced-fish-6`, {frameWidth:256,frameHeight:256});
     }
     this.load.image('village-art','/images/game/village-night.webp');
     this.load.image('boat-art','/images/game/boat.webp');
@@ -247,7 +248,9 @@ class ReefScene extends Phaser.Scene {
       [1570, 215, 'fish-reef', 'reef dart'], [1775, 340, 'fish-moon', 'moonfin'], [2060, 266, 'fish-coral', 'coral wrasse'],
     ];
     fishDefs.forEach(([x, y, texture, name], index) => {
-      const sprite = this.fishGroup.create(x, y, texture).setDisplaySize(texture==='fish-reef'?56:66,texture==='fish-reef'?56:66).setDepth(7);
+      const artKey={'fish-reef':'gold-swim','fish-moon':'teal-swim','fish-coral':'coral-swim'}[texture];
+      const size=this.cache.json.get('game-art-manifest')[artKey].displayFrameSize;
+      const sprite = this.fishGroup.create(x, y, texture).setDisplaySize(size,size).setDepth(7);
       if(!reducedMotion)sprite.play(texture+'-loop');
       sprite.setBodySize(160, 100); sprite.body.setAllowGravity(false); sprite.setData({ name, baseY: y, phase: index * .91, pace: 16 + (index % 3) * 8 });
       this.fishList.push(sprite);

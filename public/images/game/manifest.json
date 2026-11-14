@@ -8,7 +8,9 @@
     "columns": 4,
     "rows": 3,
     "fps": 10,
-    "displayFrameSize": 150
+    "displayFrameSize": 150,
+    "visibleMaxWidth": 145,
+    "visibleMaxHeight": 97
   },
   "gold-swim": {
     "file": "gold-swim.webp",
@@ -19,7 +21,9 @@
     "columns": 4,
     "rows": 2,
     "fps": 8,
-    "displayFrameSize": 56
+    "displayFrameSize": 50,
+    "visibleMaxWidth": 48,
+    "visibleMaxHeight": 34
   },
   "teal-swim": {
     "file": "teal-swim.webp",
@@ -30,7 +34,9 @@
     "columns": 4,
     "rows": 2,
     "fps": 8,
-    "displayFrameSize": 66
+    "displayFrameSize": 60,
+    "visibleMaxWidth": 54,
+    "visibleMaxHeight": 31
   },
   "coral-swim": {
     "file": "coral-swim.webp",
@@ -41,7 +47,9 @@
     "columns": 4,
     "rows": 2,
     "fps": 8,
-    "displayFrameSize": 66
+    "displayFrameSize": 65,
+    "visibleMaxWidth": 58,
+    "visibleMaxHeight": 30
   },
   "shark-swim": {
     "file": "shark-swim.webp",
@@ -52,7 +60,9 @@
     "columns": 4,
     "rows": 2,
     "fps": 7,
-    "displayFrameSize": 260
+    "displayFrameSize": 260,
+    "visibleMaxWidth": 250,
+    "visibleMaxHeight": 123
   },
   "malia-idle": {
     "file": "malia-idle.webp",
@@ -63,7 +73,9 @@
     "columns": 3,
     "rows": 2,
     "fps": 3,
-    "displayFrameSize": 128
+    "displayFrameSize": 128,
+    "visibleMaxWidth": 60,
+    "visibleMaxHeight": 109
   },
   "tane-idle": {
     "file": "tane-idle.webp",
@@ -74,7 +86,9 @@
     "columns": 3,
     "rows": 2,
     "fps": 3,
-    "displayFrameSize": 128
+    "displayFrameSize": 128,
+    "visibleMaxWidth": 68,
+    "visibleMaxHeight": 109
   },
   "piko-idle": {
     "file": "piko-idle.webp",
@@ -85,7 +99,9 @@
     "columns": 3,
     "rows": 2,
     "fps": 3,
-    "displayFrameSize": 104
+    "displayFrameSize": 104,
+    "visibleMaxWidth": 42,
+    "visibleMaxHeight": 89
   },
   "reef": {
     "file": "reef.webp",

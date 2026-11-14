@@ -146,10 +146,14 @@ Example sheet prompt structure:
 - Browser smoke coverage includes keyboard and touch movement, capture, keepsake return, night conversations, a second active dive, and saved progress.
 - Built-in imagegen created the illustration and pose sheets. Sharp performs format conversion and frame packing; gifenc encodes the animated proof.
 
-## Small fish readability revision
+## Superseded minimal-fish trial
 
-Redraw the blue/teal moonfin and red coral wrasse for roughly55 ×28 visible game pixels. Use a strong charcoal silhouette, one flat body color, one cream belly wedge, one dark eye, and at most two fin-ray strokes. Remove fine scale marks, ornamental spirals, crosshatching, speckles and busy internal patterns. Retain the4 ×2 transparent eight-frame tail-animation grid and fixed body/eye anchors. Built-in imagegen generated the replacement sheets; source provenance records the selected outputs.
+This earlier trial was rejected as too simple. Its brief was to redraw the blue/teal moonfin and red coral wrasse for roughly55 ×28 visible game pixels. Use a strong charcoal silhouette, one flat body color, one cream belly wedge, one dark eye, and at most two fin-ray strokes. Remove fine scale marks, ornamental spirals, crosshatching, speckles and busy internal patterns. Retain the4 ×2 transparent eight-frame tail-animation grid and fixed body/eye anchors. Built-in imagegen generated the replacement sheets; source provenance records the selected outputs.
 
 ## Diver locomotion states
 
 Swim frames play only while keyboard, touch direction, or an active click-to-swim destination commands movement. On input release or destination arrival, transition to a fixed neutral frame with a gentle float/roll. Idle floating has no kicking or arm-stroke loop. Losing focus releases input and cancels the destination; keyboard/touch movement takes priority over a previous click destination. Reduced-motion mode holds the neutral pose.
+
+## Playful fish revision
+
+The minimal icon-like red/blue candidates were replaced. The selected imagegen prompt asks for expressive hand-carved silhouettes, lively eyes, compact characterful fins, two broad flank markings and restrained dry-ink texture. Exclude dense scale patterns and fine hatchwork. Keep each eight-frame tail cycle anchored. The moonfin target visible length is54 game pixels, the wrasse58 pixels, beside a diver approximately132 pixels long. Preparation measures opaque frame bounds to calculate display scale, rather than assuming transparent frame width equals visible fish length. The runtime and moving preview both read that display scale from the same manifest.
