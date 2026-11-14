@@ -44,9 +44,16 @@ try {
   await page.screenshot({ path: '/tmp/reefkeeper-desktop.png', fullPage: true });
   await page.getByRole('button', { name: /Start the dive/ }).click();
   await page.locator('#game-canvas').screenshot({ path: '/tmp/reefkeeper-dive.png' });
+  if(await page.locator('#game-canvas').getAttribute('data-swimmer-state')!=='floating')throw Error('The diver should begin floating.');
   await page.keyboard.down('ArrowRight');
   await page.waitForFunction(() => Number(document.querySelector('#game-canvas').dataset.playerPosition?.split(',')[0]) >= 270);
+  if(await page.locator('#game-canvas').getAttribute('data-swimmer-state')!=='swimming')throw Error('Movement did not start the swim cycle.');
+  const activeFrame=await page.locator('#game-canvas').getAttribute('data-swimmer-frame');
+  await page.waitForFunction(frame=>document.querySelector('#game-canvas').dataset.swimmerFrame!==frame,activeFrame);
   await page.keyboard.up('ArrowRight');
+  await page.waitForFunction(()=>document.querySelector('#game-canvas').dataset.swimmerState==='floating');
+  await page.waitForTimeout(250);
+  if(await page.locator('#game-canvas').getAttribute('data-swimmer-frame')!=='2')throw Error('The stopped diver kept swimming instead of holding the float pose.');
   await page.locator('#game-canvas').screenshot({ path: '/tmp/reefkeeper-after-move.png' });
   await page.keyboard.press('Space');
   if ((await page.locator('#haul-count').textContent()).trim() !== '1') throw new Error(`The diver could not catch the nearby fish (air ${await page.locator('#air-value').textContent()}, phase ${await page.locator('#phase-label').textContent()}, errors ${errors.join('; ')}).`);
@@ -78,6 +85,10 @@ try {
   await page.keyboard.up('ArrowRight');
   const dayTwoMove = await page.locator('#game-canvas').getAttribute('data-player-position');
   if (dayTwoMove === dayTwoStart) throw new Error('The next day started without an active dive.');
+  const destinationCanvas=await page.locator('#game-canvas').boundingBox();
+  await page.locator('#game-canvas').click({position:{x:destinationCanvas.width*360/960,y:destinationCanvas.height*220/540}});
+  await page.waitForFunction(()=>document.querySelector('#game-canvas').dataset.swimmerState==='swimming');
+  await page.waitForFunction(()=>document.querySelector('#game-canvas').dataset.swimmerState==='floating');
   await page.keyboard.press('Escape');
   await page.reload({ waitUntil: 'networkidle' });
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('reefkeeper-save')));
@@ -95,7 +106,9 @@ try {
   await page.mouse.move(rightButton.x + rightButton.width / 2, rightButton.y + rightButton.height / 2);
   await page.mouse.down();
   await page.waitForFunction(() => Number(document.querySelector('#game-canvas').dataset.playerPosition?.split(',')[0]) >= 270);
+  if(await page.locator('#game-canvas').getAttribute('data-swimmer-state')!=='swimming')throw Error('Touch input did not start swimming.');
   await page.mouse.up();
+  await page.waitForFunction(()=>document.querySelector('#game-canvas').dataset.swimmerState==='floating');
   const movedMobilePosition = await page.locator('#game-canvas').getAttribute('data-player-position');
   if (movedMobilePosition === startMobilePosition) throw new Error('The touch direction pad did not move the diver.');
   await page.getByRole('button', { name: /CATCH/ }).click();

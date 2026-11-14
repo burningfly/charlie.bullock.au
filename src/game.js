@@ -151,7 +151,7 @@ class ReefScene extends Phaser.Scene {
   preload() {
     this.load.image('reef-print', '/images/game/reef.webp');
     for (const [key,file] of [['reef-diver','diver-swim'],['fish-reef','gold-swim'],['fish-moon','teal-swim'],['fish-coral','coral-swim'],['reef-shark','shark-swim'],['villager-0','malia-idle'],['villager-1','tane-idle'],['villager-2','piko-idle']]) {
-      this.load.spritesheet(key, `/images/game/${file}.webp`, {frameWidth:256,frameHeight:256});
+      this.load.spritesheet(key, `/images/game/${file}.webp?v=simple-fish-idle-5`, {frameWidth:256,frameHeight:256});
     }
     this.load.image('village-art','/images/game/village-night.webp');
     this.load.image('boat-art','/images/game/boat.webp');
@@ -172,7 +172,8 @@ class ReefScene extends Phaser.Scene {
     this.makeReefObjects();
     this.player = this.physics.add.sprite(145, 255, 'reef-diver').setDisplaySize(150,150).setDepth(10);
     this.player.setBodySize(100, 75).setCollideWorldBounds(true).setDrag(620, 620).setMaxVelocity(220, 180);
-    if(!reducedMotion)this.player.play('reef-diver-loop');
+    this.locomotionState=null;
+    this.setLocomotionState(false);
     this.physics.world.setBounds(0, 112, WORLD_WIDTH, 360);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, HEIGHT);
     this.cameras.main.startFollow(this.player, true, .08, .08);
@@ -185,6 +186,9 @@ class ReefScene extends Phaser.Scene {
       if (event.code === 'Escape' || event.key === 'Escape') { event.preventDefault(); this.returnHome(); }
     };
     this.input.keyboard.on('keydown', this.keyboardHandler);
+    this.releaseControls=()=>{this.touch={x:0,y:0};this.moveTarget=null;this.input.keyboard.resetKeys();this.player.setVelocity(0,0);this.setLocomotionState(false);};
+    window.addEventListener('blur',this.releaseControls);
+    this.game.events.on('release-controls',this.releaseControls);
     this.physics.add.overlap(this.player, this.predator, this.onPredatorBump, null, this);
     this.physics.add.overlap(this.player, this.fishGroup, this.onFishBump, null, this);
     this.physics.add.overlap(this.player, this.charm, () => { this.charmNearby = true; }, null, this);
@@ -198,6 +202,8 @@ class ReefScene extends Phaser.Scene {
       this.game.events.off('touch-move', this.setTouch, this);
       this.game.events.off('catch-action', this.catchNearby, this);
       this.input.keyboard.off('keydown', this.keyboardHandler);
+      window.removeEventListener('blur',this.releaseControls);
+      this.game.events.off('release-controls',this.releaseControls);
     });
     this.input.on('pointerdown', (pointer) => {
       if (!this.activeDive || pointer.downElement?.id === 'start-button') return;
@@ -258,6 +264,16 @@ class ReefScene extends Phaser.Scene {
     // Reef scenery is painted into the illustrated environment layer.
     this.add.text(WORLD_WIDTH-165, 137, 'SWIM HOME  ←', { fontFamily: 'system-ui', fontSize: '11px', color: '#173f40', fontStyle: 'bold', backgroundColor: '#f3e8c6', padding: { x: 6, y: 4 } }).setDepth(6);
   }
+  setLocomotionState(moving) {
+    const state=moving?'swimming':'floating';
+    if(this.locomotionState!==state){
+      this.locomotionState=state;
+      if(moving&&!reducedMotion)this.player.play('reef-diver-loop');
+      else {this.player.anims.stop();this.player.setFrame(2);}
+      this.game.canvas.dataset.swimmerState=state;
+    }
+    this.game.canvas.dataset.swimmerFrame=String(this.player.frame.name);
+  }
   startDive() {
     if (this.activeDive) return;
     this.activeDive = true; trip.active = true; trip.air = 100; trip.haul = 0; trip.foundCharm = false; this.charmNearby = false;
@@ -265,6 +281,7 @@ class ReefScene extends Phaser.Scene {
     ui.hint.innerHTML = saved.spearGun ? 'Move near a fish and press <kbd>SPACE</kbd> to fire your spear gun.' : 'Swim close to a fish, then press <kbd>SPACE</kbd> or Catch.';
     this.game.canvas.focus();
     this.player.setPosition(145, 255).setVelocity(0, 0).setAlpha(1);
+    this.setLocomotionState(false);
     this.cameras.main.startFollow(this.player, true, .08, .08);
     updateHud(); toast('Follow the fish. Find the shell charm farther along the reef.');
   }
@@ -322,6 +339,7 @@ class ReefScene extends Phaser.Scene {
   returnHome(reason = 'You chose to return') {
     if (!this.activeDive) return;
     this.activeDive = false; trip.active = false; trip.air = Math.max(1, trip.air);
+    this.setLocomotionState(false);
     this.player.setVelocity(0,0); ui.returnButton.disabled = true; ui.phase.textContent = 'BACK ON SHORE';
     if (trip.haul > saved.bestHaul) { saved.bestHaul = trip.haul; persist(); ui.scoreForm.hidden = trip.haul <= 0; }
     ui.nightTitle.textContent = reason.includes('air') ? 'A good time to come home.' : 'Welcome home, diver.';
@@ -354,6 +372,7 @@ class ReefScene extends Phaser.Scene {
     const down = this.cursors.down.isDown || this.wasd.S.isDown;
     let vx = Number(right) - Number(left) + this.touch.x;
     let vy = Number(down) - Number(up) + this.touch.y;
+    if(vx||vy)this.moveTarget=null;
     if (this.moveTarget) {
       const dx = this.moveTarget.x - this.player.x; const dy = this.moveTarget.y - this.player.y;
       if (Math.hypot(dx,dy) < 20) this.moveTarget = null;
@@ -361,8 +380,11 @@ class ReefScene extends Phaser.Scene {
     }
     const length = Math.hypot(vx,vy) || 1; const speed = saved.spearGun ? 188 : 208;
     if (vx || vy) this.player.setVelocity((vx/length)*speed,(vy/length)*speed); else this.player.setVelocity(0,0);
+    const swimming=Boolean(vx||vy);
+    this.setLocomotionState(swimming);
     if (vx) this.player.setFlipX(vx<0);
-    if (!reducedMotion) this.player.setAngle(Phaser.Math.Clamp(vy * 4,-10,10)); else this.player.setAngle(0);
+    const targetAngle=reducedMotion?0:swimming?Phaser.Math.Clamp(vy/length*6,-6,6):Math.sin(time/1200)*1.2;
+    this.player.setAngle(Phaser.Math.Linear(this.player.angle,targetAngle,Math.min(1,dt*8)));
     this.game.canvas.dataset.playerPosition = `${Math.round(this.player.x)},${Math.round(this.player.y)}`;
     this.fishList.forEach((fish) => {
       if (!fish.active || fish.getData('caught')) return;
@@ -499,7 +521,7 @@ document.querySelectorAll('[data-move]').forEach(button=>{
   const stop=event=>{event.preventDefault();if(button.hasPointerCapture?.(event.pointerId))button.releasePointerCapture(event.pointerId);send(0,0);};
   button.addEventListener('pointerup',stop);button.addEventListener('pointercancel',stop);button.addEventListener('pointerleave',stop);
 });
-document.addEventListener('visibilitychange',()=>{if(document.hidden){game.loop.sleep();}else{game.loop.wake();}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){game.events.emit('release-controls');game.loop.sleep();}else{game.loop.wake();}});
 document.querySelector('#score-form').addEventListener('submit',async event=>{
   event.preventDefault();const button=ui.scoreForm.querySelector('button');button.disabled=true;button.textContent='Saving…';
   try{const response=await fetch('/api/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game:GAME_SLUG,nickname:new FormData(ui.scoreForm).get('nickname'),score:trip.haul})});if(!response.ok)throw Error();ui.scoreForm.hidden=true;toast('Your basket is on the board!');await loadScores();}

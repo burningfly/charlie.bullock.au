@@ -145,3 +145,11 @@ Example sheet prompt structure:
 - Animated proof: `../outputs/game-art-animation-preview.gif`. The GIF plays 30 composite frames and shows all eight actor loops together, rather than relying on static sprite-sheet previews.
 - Browser smoke coverage includes keyboard and touch movement, capture, keepsake return, night conversations, a second active dive, and saved progress.
 - Built-in imagegen created the illustration and pose sheets. Sharp performs format conversion and frame packing; gifenc encodes the animated proof.
+
+## Small fish readability revision
+
+Redraw the blue/teal moonfin and red coral wrasse for roughly55 ×28 visible game pixels. Use a strong charcoal silhouette, one flat body color, one cream belly wedge, one dark eye, and at most two fin-ray strokes. Remove fine scale marks, ornamental spirals, crosshatching, speckles and busy internal patterns. Retain the4 ×2 transparent eight-frame tail-animation grid and fixed body/eye anchors. Built-in imagegen generated the replacement sheets; source provenance records the selected outputs.
+
+## Diver locomotion states
+
+Swim frames play only while keyboard, touch direction, or an active click-to-swim destination commands movement. On input release or destination arrival, transition to a fixed neutral frame with a gentle float/roll. Idle floating has no kicking or arm-stroke loop. Losing focus releases input and cancels the destination; keyboard/touch movement takes priority over a previous click destination. Reduced-motion mode holds the neutral pose.
